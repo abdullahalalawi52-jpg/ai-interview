@@ -1,0 +1,9 @@
+.next
+node_modules
+package-lock.json
+public
+build
+dist
+out
+tsconfig.tsbuildinfo
+next-env.d.ts

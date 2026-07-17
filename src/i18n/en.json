@@ -1,0 +1,395 @@
+{
+  "nav": {
+    "brand": "AI Interview Prep",
+    "dashboard": "Dashboard",
+    "leaderboard": "Leaderboard",
+    "atsScanner": "ATS Scanner",
+    "gapAnalyzer": "Interview Report",
+    "quiz": "Quizzes",
+    "login": "Log In",
+    "logout": "Log Out",
+    "startInterview": "Start Interview"
+  },
+  "errors": {
+    "default": "An unexpected error occurred. Please try again.",
+    "network": "Failed to connect to the server. Check your internet connection.",
+    "auth": "Invalid session. Please log in again.",
+    "fetchFailed": "Failed to fetch data."
+  },
+  "home": {
+    "badge": "Powered by AI GPT-4",
+    "title": "Prepare for your next interview smartly",
+    "subtitle": "Practice with an AI-powered interview simulator and get instant feedback on your performance. Overcome interview anxiety with a realistic experience that mimics top companies.",
+    "startBtn": "Start Training Now",
+    "analyzeBtn": "Analyze Your Resume",
+    "aiBadge1": "High Confidence",
+    "aiBadge2": "Clarity: 95%",
+    "aiAnalysis": "Analyzing answer...",
+    "aiRating": "Excellent",
+    "featuresTitle": "How do we help you stand out?",
+    "featuresSubtitle": "We use the latest AI technologies to put you in the center of the action and prepare you for all possibilities.",
+    "f1Title": "Interactive Voice Interviews",
+    "f1Desc": "Practice with voice with an AI that understands you. Natural voice simulation using generative AI to create a real dialogue.",
+    "f2Title": "Resume Analysis",
+    "f2Desc": "Discover gaps and get training recommendations. We match your resume with the target job requirements.",
+    "f3Title": "Detailed Performance Reports",
+    "f3Desc": "Strengths and weaknesses for each answer. Get an accurate assessment of content, body language, and tone of voice.",
+    "ctaTitle": "Start your journey to your dream job today",
+    "ctaDesc": "Join thousands of professionals who trusted \"AI Interview Prep\" to improve their career opportunities.",
+    "ctaBtn": "Sign up for free and start training"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "shareTitle": "AI Interview Prep",
+    "shareText": "The best platform to practice personal interviews with AI!",
+    "copied": "Website link copied successfully!"
+  },
+  "dashboard": {
+    "welcome": "Welcome back!",
+    "subtitle": "Track your progress and prepare for your next interview.",
+    "stats": {
+      "completed": "Completed Interviews",
+      "avgScore": "Average Score",
+      "estTime": "Estimated Time",
+      "minutes": "Minutes",
+      "none": "None"
+    },
+    "history": {
+      "title": "Previous Interviews History",
+      "empty": "You haven't recorded any interviews yet.",
+      "startFirst": "Start your first interview now!",
+      "date": "Date",
+      "companyTitle": "Company / Title",
+      "score": "Score",
+      "action": "Action",
+      "notAvailable": "N/A",
+      "notSpecified": "Unspecified",
+      "pending": "Pending",
+      "viewReport": "View Report",
+      "typeJob": "Type / Job",
+      "quizCompleted": "Completed Quiz"
+    },
+    "actions": {
+      "title": "What do you want to do today?",
+      "interview": {
+        "title": "New Interview Simulation",
+        "desc": "Practice common and industry-specific interview questions with instant smart feedback.",
+        "btn": "Start Interview"
+      },
+      "gap": {
+        "title": "Resume Analysis",
+        "desc": "Discover gaps between your skills and market requirements and get a personalized training plan.",
+        "btn": "Upload Resume"
+      },
+      "quiz": {
+        "title": "Quick Knowledge Quiz",
+        "desc": "Evaluate your level in basic technical interview concepts through quick multiple-choice questions.",
+        "btn": "Start Quiz"
+      }
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Discover the best professionals on our platform based on smart interview ratings. Practice more to reach the top!",
+    "table": {
+      "rank": "Rank",
+      "user": "User",
+      "levelBadge": "Level & Badge",
+      "score": "Score"
+    },
+    "footer": "This list is updated weekly based on average performance.",
+    "empty": "No data available in the leaderboard yet.",
+    "emptyDesc": "Be the first to complete an interview and top the board!",
+    "roles": {
+      "softwareEngineer": "Software Engineer",
+      "dataScientist": "Data Scientist",
+      "projectManager": "Project Manager",
+      "uxDesigner": "UX/UI Designer",
+      "appDeveloper": "App Developer",
+      "networkEngineer": "Network Engineer",
+      "systemsAnalyst": "Systems Analyst"
+    },
+    "levels": {
+      "expert": "Expert",
+      "pro": "Professional",
+      "advanced": "Advanced",
+      "intermediate": "Intermediate",
+      "beginner": "Ambitious Beginner"
+    }
+  },
+  "quiz": {
+    "alerts": {
+      "fillAll": "Please fill all fields to generate questions correctly.",
+      "apiError": "Failed to connect to AI. Please verify your API key.",
+      "generateError": "An error occurred while generating questions. Check your API key in .env.local"
+    },
+    "start": {
+      "title": "Smart Custom Quiz",
+      "desc": "We generate custom questions for you based on the company, job title, and your specialization to realistically simulate your technical test.",
+      "btn": "Customize & Start Quiz"
+    },
+    "config": {
+      "title": "Smart Quiz Parameters",
+      "company": "Target Company Name",
+      "companyPlaceholder": "e.g., Google, Aramco, Tuwaiq",
+      "job": "Job Title",
+      "jobPlaceholder": "e.g., Frontend Developer, Data Analyst",
+      "spec": "Exact Specialization",
+      "specPlaceholder": "e.g., React.js, Database Design",
+      "count": "Number of Questions",
+      "questions": "Questions",
+      "back": "Back",
+      "generate": "Generate Smart Questions"
+    },
+    "generating": {
+      "title": "Generating questions...",
+      "desc": "We are customizing questions for the {{job}} role at {{company}}..."
+    },
+    "playing": {
+      "progress": "Question {{current}} of {{total}}",
+      "score": "Score: {{score}}",
+      "badge": "Custom Question",
+      "cancel": "Cancel Quiz",
+      "next": "Next Question",
+      "finish": "Finish Quiz"
+    },
+    "result": {
+      "perfect": "Perfect Performance!",
+      "good": "Very Good Performance!",
+      "needsPractice": "You need more practice",
+      "perfectDesc": "You have proven your worth. You are completely ready to apply for {{job}} at {{company}}!",
+      "practiceDesc": "Every question is an opportunity to learn something new in {{spec}}. Don't give up!",
+      "newQuiz": "New Quiz",
+      "dashboard": "Back to Dashboard"
+    }
+  },
+  "interview": {
+    "backToDashboard": "Back to Dashboard",
+    "status": {
+      "setup": "Interview Setup",
+      "ready": "Ready to Start",
+      "thinking": "Agent is thinking...",
+      "listening": "Listening...",
+      "finished": "Interview Finished",
+      "yourTurn": "Your turn to speak"
+    },
+    "setup": {
+      "title": "Interview Setup",
+      "company": "Target Company Name",
+      "companyPlaceholder": "e.g., Google, Aramco, STC",
+      "job": "Job Title",
+      "jobPlaceholder": "e.g., Software Engineer, Project Manager",
+      "spec": "Specialization / Field",
+      "specPlaceholder": "e.g., Web Development, Digital Marketing",
+      "type": "Interview Type",
+      "typeTech": "Technical Interview",
+      "typeTechDesc": "Deep technical questions and coding challenges to evaluate your skills.",
+      "typeBehav": "Behavioral Interview (STAR)",
+      "typeBehavDesc": "Behavioral questions based on STAR method to measure soft skills.",
+      "cvUpload": "Resume / CV (Optional)",
+      "cvUploadDesc": "Upload your CV (PDF) to get personalized questions based on your experience",
+      "cvParsed": "Resume text extracted successfully!",
+      "cvUploading": "Analyzing...",
+      "saveBtn": "Save and Continue"
+    },
+    "idle": {
+      "title": "Interview Room Ready",
+      "desc1": "The AI will interview you for the role of",
+      "desc2": "at",
+      "desc3": "Make sure you are in a quiet place and use your microphone.",
+      "editBtn": "Edit Settings",
+      "startBtn": "Start"
+    },
+    "chat": {
+      "aiName": "Interviewer (AI)",
+      "you": "You",
+      "micStop": "Stop Microphone",
+      "micStart": "Speak via Microphone",
+      "placeholderListening": "Listening... you can speak now",
+      "placeholderNormal": "Type your answer here or use the microphone..."
+    },
+    "finished": {
+      "title": "Interview Finished Successfully!",
+      "desc": "Your answers have been saved successfully. You can review them or analyze your performance.",
+      "goToGap": "Go to Gap Analyzer",
+      "saving": "Saving..."
+    },
+    "startMessage": "Hello, I am ready to start the interview for {{company}}. Please ask the first question.",
+    "codeEditorTitle": "Write your code here..."
+  },
+  "gapAnalyzer": {
+    "loadingData": "Verifying data...",
+    "loadingAI": "Analyzing interview with AI...",
+    "errors": {
+      "noInterviewId": "No interview specified for analysis.",
+      "notFoundLocal": "Interview not found locally.",
+      "loginRequired": "Please login to view this cloud-saved interview.",
+      "notFound": "Interview not found.",
+      "aiError": "An error occurred while generating analysis from AI.",
+      "unexpected": "An unexpected error occurred."
+    },
+    "hero": {
+      "title": "Performance Report & Gap Analyzer",
+      "desc": "Based on your conversation, the AI has extracted your strengths and the gaps that need extra focus.",
+      "loginPrompt": "Log in to save this report in the cloud and add it permanently to your profile!"
+    },
+    "errorTitle": "Error",
+    "score": {
+      "title": "Overall Performance Score",
+      "desc": "Your performance was evaluated based on accuracy and professionalism in answering the interview questions."
+    },
+    "tip": {
+      "title": "Quick Tip",
+      "desc": "Focusing on weaknesses will make you a stronger candidate. Try reviewing the recommended topics before a real interview!"
+    },
+    "strengths": "Strengths",
+    "weaknesses": "Gaps (Weaknesses)",
+    "tone": {
+      "title": "Tone & Emotion Analysis",
+      "confidence": "Confidence Level",
+      "professionalism": "Professionalism & Terminology",
+      "aiNote": "AI Note:"
+    },
+    "topics": "Recommended Topics to Study"
+  },
+  "profile": {
+    "title": "Profile",
+    "dashboard": "Dashboard",
+    "newUser": "New User",
+    "joinDate": "Join Date",
+    "notAvailable": "Not Available",
+    "currentLevel": "Current Level",
+    "expert": "Interview Expert",
+    "intermediate": "Intermediate",
+    "beginner": "Ambitious Beginner",
+    "performanceSummary": "Performance Summary",
+    "completedInterviews": "Completed Interviews",
+    "averageScore": "Average Score",
+    "trainingTime": "Est. Training Time",
+    "minutes": "mins",
+    "latestInterviews": "Latest Interviews",
+    "noInterviews": "No interviews recorded yet.",
+    "notSpecified": "Not Specified",
+    "in": "at",
+    "noRating": "No Rating",
+    "viewDetails": "View Details",
+    "viewAll": "View all interviews in dashboard",
+    "latestActivities": "Latest Activities",
+    "noActivities": "No activities recorded yet."
+  },
+  "authModal": {
+    "title": "Welcome",
+    "desc": "Log in to save your interviews and get smart performance reports.",
+    "google": "Continue with Google"
+  },
+  "settingsModal": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "appearance": "Appearance",
+      "tabSecurity": "Security",
+      "billing": "Billing"
+    },
+    "logout": "Log Out",
+    "profile": {
+      "title": "Profile",
+      "desc": "Update your personal information and how you appear to the community.",
+      "avatar": "Profile Picture",
+      "avatarDesc": "Image must be in JPG or PNG format and less than 5MB.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "jobTarget": "Target Job Title",
+      "saveSuccess": "Changes saved successfully!",
+      "saveBtn": "Save Changes"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "desc": "Choose the type of notifications you want to receive.",
+      "items": [
+        {
+          "title": "Interview Reminders",
+          "desc": "Receive reminders before scheduled practice sessions."
+        },
+        {
+          "title": "Weekly Tips & Guides",
+          "desc": "Latest articles and tips for passing interviews."
+        },
+        {
+          "title": "System Updates",
+          "desc": "Notifications about new features and bug fixes."
+        }
+      ]
+    },
+    "appearance": {
+      "title": "Appearance Settings",
+      "desc": "Customize the application look and select your preferred color mode.",
+      "themeLabel": "App Theme",
+      "selectTheme": "Choose your preferred color theme for comfortable viewing:",
+      "themes": {
+        "light": "Light Mode ☀️",
+        "dark": "Dark Mode",
+        "system": "System Default 🖥️"
+      }
+    },
+    "tabSecurity": {
+      "title": "Security & Privacy",
+      "desc": "Manage your account security and view current session details.",
+      "provider": "Sign-in Provider",
+      "verified": "Email Verification Status",
+      "verifiedYes": "Verified & Secured",
+      "verifiedNo": "Unverified ⚠️",
+      "accountSecured": "Account Protection State",
+      "securedYes": "Fully Protected",
+      "uid": "User Identifier (UID)"
+    },
+    "billing": {
+      "title": "Subscription & Billing",
+      "desc": "View your current subscription plan and AI credits usage statistics.",
+      "tier": "Current Plan",
+      "tierFree": "Free Tier",
+      "usage": "AI Interview Credits Usage",
+      "usageDesc": "You have consumed 5 out of 10 free AI credits available for this month.",
+      "upgradeBtn": "Upgrade to Premium"
+    },
+    "underDev": {
+      "title": "This Section is Under Development",
+      "desc": "We are working hard to add more settings soon."
+    }
+  },
+  "atsScanner": {
+    "title": "ATS Resume Scanner",
+    "subtitle": "Ensure your resume can beat company bots. Upload your file, enter the job description, and AI will provide your match score and tips.",
+    "step1": "1. Upload Resume (PDF)",
+    "clickToUpload": "Click to upload",
+    "orDrag": "or drag file here",
+    "maxSize": "PDF (Max 5MB)",
+    "step2": "2. Paste Job Description",
+    "placeholder": "Copy and paste job requirements from the job posting here...",
+    "errorPdfOnly": "Please upload a PDF file only.",
+    "errorMissing": "Please upload a resume and enter a job description.",
+    "errorDefault": "An error occurred during resume scanning.",
+    "analyzing": "Analyzing...",
+    "scanBtn": "Scan Resume Now",
+    "resultsPlaceholderTitle": "Analysis results will appear here",
+    "resultsPlaceholderDesc": "Upload your resume and job description to begin",
+    "aiReading": "AI is reading your resume...",
+    "matchingSkills": "Matching skills and experience",
+    "matchScore": "Match Score",
+    "excellent": "EXCELLENT",
+    "good": "GOOD",
+    "poor": "POOR",
+    "strengths": "Strengths & Matches",
+    "missingKeywords": "Missing Keywords",
+    "tips": "How to improve your resume?"
+  },
+  "testPlural": {
+    "zero": "No interviews",
+    "one": "1 interview",
+    "other": "{{count}} interviews"
+  }
+}
