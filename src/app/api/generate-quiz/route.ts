@@ -60,7 +60,7 @@ export async function POST(req: Request) {
 
     // طلب توليد الأسئلة من Gemini
     const { object } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-1.5-flash"),
       schema: questionSchema,
       prompt: `أنت مُحاور تقني ومهني خبير تعمل في وظيفة إجراء مقابلات وظيفية دقيقة.
       مهمتك هي كتابة ${count} أسئلة خيارات متعددة (Multiple Choice) لاختبار مرشح يتقدم لوظيفة "${jobTitle}" في شركة "${company}" ضمن تخصص "${specialization}".
