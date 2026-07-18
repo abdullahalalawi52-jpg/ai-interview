@@ -4,6 +4,8 @@ import { z } from "zod";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
 
+export const maxDuration = 60; // Allow up to 60 seconds for AI generation
+
 // تعريف شكل البيانات (Schema) الذي نريده من الذكاء الاصطناعي
 const questionSchema = z.object({
   questions: z.array(
