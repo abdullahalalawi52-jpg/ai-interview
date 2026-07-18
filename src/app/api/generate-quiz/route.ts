@@ -1,7 +1,6 @@
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
 
 export const maxDuration = 60; // Allow up to 60 seconds for AI generation
@@ -40,12 +39,9 @@ const questionSchema = z.object({
  */
 export async function POST(req: Request) {
   try {
-    // 1. Authentication (Optional)
-    const { uid } = await verifyAuth(req);
-
-    // 2. Rate Limiting
+    // 2. Rate Limiting (Using IP address since auth is optional)
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    const identifier = uid || ip;
+    const identifier = ip;
     const { success } = await ratelimit.limit(identifier);
     if (!success) {
       return new Response(JSON.stringify({ error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً." }), { status: 429, headers: { "Content-Type": "application/json" } });
