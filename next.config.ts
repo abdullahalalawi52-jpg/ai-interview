@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["pdf-parse", "firebase-admin"],
+  serverExternalPackages: ["pdf-parse", "firebase-admin", "jwks-rsa", "jose"],
 };
 
 export default nextConfig;
