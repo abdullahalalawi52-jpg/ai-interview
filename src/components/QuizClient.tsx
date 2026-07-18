@@ -23,7 +23,6 @@ export default function QuizClient() {
   // Customization state
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
-  const [specialization, setSpecialization] = useState("");
   const [selectedCount, setSelectedCount] = useState<number>(5);
   
   // Active test state
@@ -39,7 +38,7 @@ export default function QuizClient() {
   };
 
   const handleStart = async () => {
-    if (!companyName.trim() || !jobTitle.trim() || !specialization.trim()) {
+    if (!companyName.trim() || !jobTitle.trim()) {
       alert(t("quiz.alerts.fillAll"));
       return;
     }
@@ -47,23 +46,30 @@ export default function QuizClient() {
     setGameState("generating");
     
     try {
-      const token = user ? await user.getIdToken() : "";
+      const headers: Record<string, string> = { 
+        "Content-Type": "application/json",
+      };
+
+      if (user) {
+        const token = await user.getIdToken();
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch("/api/generate-quiz", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({
           company: companyName,
           jobTitle: jobTitle,
-          specialization: specialization,
           count: selectedCount,
           language: language
         }),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("يجب عليك تسجيل الدخول أولاً لإنشاء اختبار.");
+        }
         throw new Error(t("quiz.alerts.apiError"));
       }
 
@@ -79,8 +85,10 @@ export default function QuizClient() {
       const msg = error instanceof Error ? error.message : "";
       if (msg === "Failed to fetch" || msg.includes("fetch")) {
         alert(t("errors.network"));
+      } else if (msg === "يجب عليك تسجيل الدخول أولاً لإنشاء اختبار.") {
+        alert(msg);
       } else {
-        alert(t("quiz.alerts.generateError"));
+        alert(t("quiz.alerts.generateError") + " " + msg);
       }
       setGameState("config");
     }
@@ -106,7 +114,6 @@ export default function QuizClient() {
           await addDoc(collection(db, "users", user.uid, "quizzes"), {
             company: companyName || "Google",
             jobTitle: jobTitle || "مهندس برمجيات",
-            specialization: specialization || "تطوير الويب",
             score: finalScore,
             total: activeQuestions.length,
             createdAt: serverTimestamp()
@@ -149,8 +156,6 @@ export default function QuizClient() {
             setCompanyName={setCompanyName}
             jobTitle={jobTitle}
             setJobTitle={setJobTitle}
-            specialization={specialization}
-            setSpecialization={setSpecialization}
             selectedCount={selectedCount}
             setSelectedCount={setSelectedCount}
             onBack={resetQuiz}
@@ -189,7 +194,6 @@ export default function QuizClient() {
             totalQuestions={activeQuestions.length}
             jobTitle={jobTitle}
             companyName={companyName}
-            specialization={specialization}
             onNewQuiz={() => setGameState("config")}
           />
         )}

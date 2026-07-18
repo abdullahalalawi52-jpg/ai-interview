@@ -1,4 +1,4 @@
-import { Settings2, Building2, Briefcase, GraduationCap, CheckCircle2, BrainCircuit } from "lucide-react";
+import { Settings2, Building2, Briefcase, CheckCircle2, BrainCircuit } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface QuizConfigProps {
@@ -6,8 +6,6 @@ interface QuizConfigProps {
   setCompanyName: (val: string) => void;
   jobTitle: string;
   setJobTitle: (val: string) => void;
-  specialization: string;
-  setSpecialization: (val: string) => void;
   selectedCount: number;
   setSelectedCount: (val: number) => void;
   onBack: () => void;
@@ -21,8 +19,6 @@ export default function QuizConfig({
   setCompanyName,
   jobTitle,
   setJobTitle,
-  specialization,
-  setSpecialization,
   selectedCount,
   setSelectedCount,
   onBack,
@@ -71,22 +67,6 @@ export default function QuizConfig({
             />
             <div className="absolute inset-y-0 end-0 w-12 flex items-center justify-center pointer-events-none text-on-surface-variant peer-focus:text-primary transition-colors">
               <Briefcase className="w-5 h-5" />
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label className="block font-label-lg mb-2 text-on-surface">{t("quiz.config.spec")}</label>
-          <div className="relative group">
-            <input
-              type="text"
-              value={specialization}
-              onChange={(e) => setSpecialization(e.target.value)}
-              placeholder={t("quiz.config.specPlaceholder")}
-              className="peer w-full bg-surface-container/50 hover:bg-surface-container border border-outline-variant/50 hover:border-outline-variant rounded-2xl py-4 px-12 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-surface transition-all duration-300 text-on-surface text-start shadow-sm focus:shadow-md"
-            />
-            <div className="absolute inset-y-0 end-0 w-12 flex items-center justify-center pointer-events-none text-on-surface-variant peer-focus:text-primary transition-colors">
-              <GraduationCap className="w-5 h-5" />
             </div>
           </div>
         </div>

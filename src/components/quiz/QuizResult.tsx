@@ -7,7 +7,6 @@ interface QuizResultProps {
   totalQuestions: number;
   jobTitle: string;
   companyName: string;
-  specialization: string;
   onNewQuiz: () => void;
 }
 
@@ -16,7 +15,6 @@ export default function QuizResult({
   totalQuestions,
   jobTitle,
   companyName,
-  specialization,
   onNewQuiz
 }: QuizResultProps) {
   const { t } = useLanguage();
@@ -52,7 +50,7 @@ export default function QuizResult({
       <p className="font-body-lg text-on-surface-variant mb-8 max-w-[36rem] mx-auto">
         {score === totalQuestions 
           ? t("quiz.result.perfectDesc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)
-          : t("quiz.result.practiceDesc").replace("{{spec}}", specialization)}
+          : t("quiz.result.practiceDesc").replace("في تخصص {{spec}}", "")}
       </p>
 
       <div className="flex flex-col sm:flex-row justify-center gap-4">

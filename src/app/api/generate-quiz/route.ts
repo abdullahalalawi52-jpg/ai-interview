@@ -38,11 +38,8 @@ const questionSchema = z.object({
  */
 export async function POST(req: Request) {
   try {
-    // 1. Authentication
-    const { uid, error: authError } = await verifyAuth(req);
-    if (authError) {
-      return new Response(JSON.stringify({ error: "غير مصرح لك بالوصول (Unauthorized)" }), { status: 401, headers: { "Content-Type": "application/json" } });
-    }
+    // 1. Authentication (Optional)
+    const { uid } = await verifyAuth(req);
 
     // 2. Rate Limiting
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
@@ -52,23 +49,23 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً." }), { status: 429, headers: { "Content-Type": "application/json" } });
     }
 
-    const { company, jobTitle, specialization, count = 5, language = 'ar' } = await req.json();
+    const { company, jobTitle, count = 5, language = 'ar' } = await req.json();
 
-    if (!company || !jobTitle || !specialization) {
+    if (!company || !jobTitle) {
       return new Response("Missing required fields", { status: 400 });
     }
 
     // طلب توليد الأسئلة من Gemini
     const { object } = await generateObject({
-      model: google("gemini-1.5-flash"),
+      model: google("gemini-2.5-flash"),
       schema: questionSchema,
       prompt: `أنت مُحاور تقني ومهني خبير تعمل في وظيفة إجراء مقابلات وظيفية دقيقة.
-      مهمتك هي كتابة ${count} أسئلة خيارات متعددة (Multiple Choice) لاختبار مرشح يتقدم لوظيفة "${jobTitle}" في شركة "${company}" ضمن تخصص "${specialization}".
+      مهمتك هي كتابة ${count} أسئلة خيارات متعددة (Multiple Choice) لاختبار مرشح يتقدم لوظيفة "${jobTitle}" في شركة "${company}".
       
       شروط الأسئلة:
       1. يجب أن تكون الأسئلة احترافية، متعمقة، ومرتبطة ببيئة العمل الواقعية في شركة ${company}.
       2. يجب أن تتحدى فهم المرشح وليس فقط حفظه للمعلومات.
-      3. اذكر اسم الشركة "${company}" واسم الوظيفة بشكل طبيعي في بعض الأسئلة.
+      3. اذكر اسم الشركة "${company}" واسم الوظيفة "${jobTitle}" بشكل طبيعي في بعض الأسئلة إن أمكن.
       4. قدم 4 خيارات لكل سؤال، واحد منها فقط صحيح.
       5. ${language === 'en' ? 'CRITICAL: The questions and all options MUST be written in English.' : 'يجب أن تكون اللغة عربية فصحى واضحة.'}
       
