@@ -11,7 +11,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore/lite";
 import { Question } from "@/types/quiz";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { experimental_useObject as useObject } from 'ai/react';
+import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { z } from 'zod';
 
 const questionSchema = z.object({
@@ -49,10 +49,10 @@ export default function QuizClient() {
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
-  const { submit, object, isLoading } = useObject({
+  const { submit, object } = useObject({
     api: '/api/generate-quiz',
     schema: questionSchema,
-    onFinish({ object: parsedObject }) {
+    onFinish({ object: parsedObject }: { object: any }) {
       if (parsedObject?.questions) {
         setActiveQuestions(parsedObject.questions as Question[]);
         setCurrentQuestionIndex(0);
@@ -61,7 +61,7 @@ export default function QuizClient() {
         setGameState("playing");
       }
     },
-    onError(error) {
+    onError(error: Error) {
       console.error("Quiz generation error:", error);
       toast.error(t("quiz.alerts.generateError") + " " + error.message);
       setGameState("config");
@@ -170,7 +170,7 @@ export default function QuizClient() {
               {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
             </h2>
             <div className="space-y-6">
-              {object?.questions?.map((q, i) => (
+              {object?.questions?.map((q: any, i: number) => (
                 <div key={i} className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 slide-up">
                   <h3 className="font-semibold text-lg mb-3">
                     {q?.question || <Skeleton className="h-6 w-3/4 inline-block" />}
