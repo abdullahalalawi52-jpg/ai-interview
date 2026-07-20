@@ -4,12 +4,13 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Loader2 } from "lucide-react";
+
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore/lite";
 import { Question } from "@/types/quiz";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 import QuizStart from "@/components/quiz/QuizStart";
 import QuizConfig from "@/components/quiz/QuizConfig";
@@ -166,12 +167,19 @@ export default function QuizClient() {
 
         {/* Generating Screen */}
         {gameState === "generating" && (
-          <div className="glass-card w-full max-w-[32rem] p-12 rounded-[32px] text-center border-2 border-primary/20 shadow-xl slide-up">
-            <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-6" />
-            <h2 className="font-headline-lg text-primary mb-2">{t("quiz.generating.title")}</h2>
-            <p className="text-on-surface-variant font-body-lg animate-pulse">
-              {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
-            </p>
+          <div className="glass-card w-full max-w-3xl p-8 rounded-3xl border border-outline-variant/30 slide-up">
+            <Skeleton className="h-8 w-3/4 mb-8 mx-auto" />
+            <div className="space-y-4">
+               <Skeleton className="h-16 w-full rounded-xl" />
+               <Skeleton className="h-16 w-full rounded-xl" />
+               <Skeleton className="h-16 w-full rounded-xl" />
+               <Skeleton className="h-16 w-full rounded-xl" />
+            </div>
+            <div className="mt-8 text-center">
+              <p className="text-on-surface-variant font-body-lg animate-pulse">
+                {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
+              </p>
+            </div>
           </div>
         )}
 

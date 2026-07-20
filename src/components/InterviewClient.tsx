@@ -12,7 +12,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { InterviewConfig } from "@/types/interview";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-
+import { Skeleton } from "@/components/ui/Skeleton";
 
 
 import InterviewSetup from "@/components/interview/InterviewSetup";
@@ -124,8 +124,16 @@ export default function InterviewClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col flex-1 bg-surface items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col flex-1 bg-surface h-screen overflow-hidden text-on-surface">
+        <header className="px-gutter h-16 border-b border-outline-variant/30 bg-surface/95 flex justify-between items-center shadow-sm">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </header>
+        <main className="flex-1 flex flex-col items-center justify-center bg-surface-container-lowest p-4 md:p-8">
+          <div className="w-full max-w-2xl">
+            <Skeleton className="h-[400px] w-full rounded-3xl" />
+          </div>
+        </main>
       </div>
     );
   }

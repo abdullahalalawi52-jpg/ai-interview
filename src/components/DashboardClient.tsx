@@ -12,6 +12,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useActivities } from "@/hooks/useActivities";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
  * DashboardClient Component
@@ -46,8 +47,25 @@ export default function DashboardClient() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col flex-1 bg-surface min-h-screen">
+        <Navbar />
+        <main className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full">
+          <div className="mb-8 flex justify-between items-end">
+            <div>
+              <Skeleton className="h-10 w-48 mb-4" />
+              <Skeleton className="h-6 w-72" />
+            </div>
+            <Skeleton className="w-11 h-11 rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <Skeleton className="h-28 rounded-2xl" />
+            <Skeleton className="h-28 rounded-2xl" />
+            <Skeleton className="h-28 rounded-2xl" />
+          </div>
+          <Skeleton className="h-8 w-40 mb-6" />
+          <Skeleton className="h-64 rounded-3xl mb-12" />
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -75,9 +93,9 @@ export default function DashboardClient() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
-            { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? "..." : activities.length.toString() },
-            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? "..." : (avgScore !== null ? avgScore + "%" : t("dashboard.stats.none")) },
-            { icon: <Clock className="text-secondary w-6 h-6" />, label: t("dashboard.stats.estTime"), value: isFetching ? "..." : (activities.filter(a => a.type === 'interview').length * 15 + activities.filter(a => a.type === 'quiz').length * 5) + " " + t("dashboard.stats.minutes") }
+            { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? <Skeleton className="h-8 w-12" /> : activities.length.toString() },
+            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? <Skeleton className="h-8 w-16" /> : (avgScore !== null ? avgScore + "%" : t("dashboard.stats.none")) },
+            { icon: <Clock className="text-secondary w-6 h-6" />, label: t("dashboard.stats.estTime"), value: isFetching ? <Skeleton className="h-8 w-20" /> : (activities.filter(a => a.type === 'interview').length * 15 + activities.filter(a => a.type === 'quiz').length * 5) + " " + t("dashboard.stats.minutes") }
           ].map((stat, i) => (
             <div key={i} className="glass-card rounded-2xl p-6 flex items-center gap-4 shadow-sm border border-transparent hover:border-outline-variant/30 transition-colors">
               <div className="p-3 bg-primary/10 rounded-xl">
@@ -95,8 +113,10 @@ export default function DashboardClient() {
         <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">{t("dashboard.history.title")}</h2>
         <div className="glass-card rounded-3xl p-6 mb-12 overflow-x-auto shadow-sm">
           {isFetching ? (
-            <div className="flex justify-center p-8">
-              <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+            <div className="flex flex-col gap-4">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
             </div>
           ) : activities.length === 0 ? (
             <div className="text-center p-8 text-on-surface-variant">

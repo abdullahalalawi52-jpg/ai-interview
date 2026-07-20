@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useLanguage, TranslationKey } from "@/context/LanguageContext";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore/lite";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 // Helper function to assign badges based on rank
 const getBadge = (index: number) => {
@@ -96,8 +97,10 @@ export default function LeaderboardClient() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
           {loading ? (
-            <div className="py-20 flex justify-center">
-              <div className="w-10 h-10 border-4 border-tertiary/20 border-t-tertiary rounded-full animate-spin" />
+            <div className="py-4 flex flex-col gap-3 relative z-10">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+              ))}
             </div>
           ) : topUsers.length === 0 ? (
             <div className="py-16 text-center z-10 relative flex flex-col items-center justify-center">

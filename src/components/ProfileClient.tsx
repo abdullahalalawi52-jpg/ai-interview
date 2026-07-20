@@ -10,6 +10,7 @@ import { User, Activity, Trophy, Clock, Mail, Award, Calendar, ChevronRight, Mic
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function ProfileClient() {
   const { user, loading } = useAuth();
@@ -26,8 +27,28 @@ export default function ProfileClient() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="flex flex-col flex-1 bg-surface min-h-screen">
+        <Navbar />
+        <main className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full">
+          <Skeleton className="h-6 w-48 mb-8" />
+          <div className="grid lg:grid-cols-3 gap-8">
+             <div className="lg:col-span-1 space-y-6">
+                <Skeleton className="h-80 rounded-3xl" />
+                <Skeleton className="h-32 rounded-3xl" />
+             </div>
+             <div className="lg:col-span-2 space-y-8">
+                <Skeleton className="h-8 w-64" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Skeleton className="h-32 rounded-2xl" />
+                  <Skeleton className="h-32 rounded-2xl" />
+                  <Skeleton className="h-32 rounded-2xl" />
+                </div>
+                <Skeleton className="h-8 w-48 mt-8 mb-4" />
+                <Skeleton className="h-64 rounded-3xl" />
+             </div>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
@@ -111,7 +132,7 @@ export default function ProfileClient() {
                   <Activity className="w-5 h-5" />
                 </div>
                 <p className="text-on-surface-variant text-sm">{t("profile.completedInterviews")}</p>
-                <p className="font-headline-lg text-headline-lg">{isFetching ? "..." : completedInterviews}</p>
+                <div className="font-headline-lg text-headline-lg">{isFetching ? <Skeleton className="h-8 w-12" /> : completedInterviews}</div>
               </div>
               
               <div className="bg-surface-container p-6 rounded-2xl border border-outline-variant/30 flex flex-col gap-2">
@@ -119,7 +140,7 @@ export default function ProfileClient() {
                   <Trophy className="w-5 h-5" />
                 </div>
                 <p className="text-on-surface-variant text-sm">{t("profile.averageScore")}</p>
-                <p className="font-headline-lg text-headline-lg">{isFetching ? "..." : averageScore > 0 ? `${averageScore}%` : "-"}</p>
+                <div className="font-headline-lg text-headline-lg">{isFetching ? <Skeleton className="h-8 w-16" /> : averageScore > 0 ? `${averageScore}%` : "-"}</div>
               </div>
 
               <div className="bg-surface-container p-6 rounded-2xl border border-outline-variant/30 flex flex-col gap-2">
@@ -127,14 +148,18 @@ export default function ProfileClient() {
                   <Clock className="w-5 h-5" />
                 </div>
                 <p className="text-on-surface-variant text-sm">{t("profile.trainingTime")}</p>
-                <p className="font-headline-lg text-headline-lg">{isFetching ? "..." : `${estimatedTimeSpent} ${t("profile.minutes")}`}</p>
+                <div className="font-headline-lg text-headline-lg">{isFetching ? <Skeleton className="h-8 w-20" /> : `${estimatedTimeSpent} ${t("profile.minutes")}`}</div>
               </div>
             </div>
 
             <h2 className="font-headline-md text-headline-md text-on-surface mt-8 mb-4">{t("profile.latestInterviews")}</h2>
             <div className="glass-card rounded-3xl overflow-hidden shadow-sm border border-outline-variant/30">
               {isFetching ? (
-                <div className="p-8 flex justify-center"><div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" /></div>
+                <div className="flex flex-col gap-4 p-6">
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                  <Skeleton className="h-16 w-full rounded-xl" />
+                </div>
               ) : activities.length === 0 ? (
                 <div className="p-8 text-center text-on-surface-variant">{t("profile.noInterviews")}</div>
               ) : (
