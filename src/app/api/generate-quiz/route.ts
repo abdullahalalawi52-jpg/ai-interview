@@ -1,5 +1,5 @@
 import { google } from "@ai-sdk/google";
-import { generateObject } from "ai";
+import { streamObject } from "ai";
 import { z } from "zod";
 import { ratelimit } from "@/lib/ratelimit";
 
@@ -54,8 +54,8 @@ export async function POST(req: Request) {
     }
 
     // طلب توليد الأسئلة من Gemini
-    const { object } = await generateObject({
-      model: google("gemini-2.5-flash"),
+    const result = await streamObject({
+      model: google("gemini-1.5-flash-8b"),
       schema: questionSchema,
       prompt: `أنت مُحاور تقني ومهني خبير تعمل في وظيفة إجراء مقابلات وظيفية دقيقة.
       مهمتك هي كتابة ${count} أسئلة خيارات متعددة (Multiple Choice) لاختبار مرشح يتقدم لوظيفة "${jobTitle}" في شركة "${company}".
@@ -70,10 +70,7 @@ export async function POST(req: Request) {
       تأكد من إرجاع الإجابة الصحيحة (answer) كفهرس (0، 1، 2، أو 3) يتطابق مع موقع الخيار الصحيح في مصفوفة الخيارات.`,
     });
 
-    return new Response(JSON.stringify(object.questions), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return result.toTextStreamResponse();
   } catch (error: unknown) {
     console.error("AI Generation Error:", error);
     return new Response(JSON.stringify({ 

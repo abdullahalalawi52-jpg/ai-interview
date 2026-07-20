@@ -124,7 +124,7 @@ export async function POST(req: Request) {
 
     console.log(">>> [POST /api/interview] Calling streamText");
     const result = streamText({
-      model: google("gemini-flash-latest"),
+      model: google("gemini-1.5-flash-8b"),
       system: systemPrompt,
       messages: coreMessages as ModelMessage[],
     });

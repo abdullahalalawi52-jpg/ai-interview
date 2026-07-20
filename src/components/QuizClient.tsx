@@ -11,6 +11,20 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore/lite";
 import { Question } from "@/types/quiz";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { experimental_useObject as useObject } from 'ai/react';
+import { z } from 'zod';
+
+const questionSchema = z.object({
+  questions: z.array(
+    z.object({
+      id: z.number().optional(),
+      category: z.string().optional(),
+      question: z.string().optional(),
+      options: z.array(z.string()).optional(),
+      answer: z.number().optional(),
+    })
+  ).optional(),
+});
 
 import QuizStart from "@/components/quiz/QuizStart";
 import QuizConfig from "@/components/quiz/QuizConfig";
@@ -35,6 +49,25 @@ export default function QuizClient() {
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
+  const { submit, object, isLoading } = useObject({
+    api: '/api/generate-quiz',
+    schema: questionSchema,
+    onFinish({ object: parsedObject }) {
+      if (parsedObject?.questions) {
+        setActiveQuestions(parsedObject.questions as Question[]);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setSelectedOption(null);
+        setGameState("playing");
+      }
+    },
+    onError(error) {
+      console.error("Quiz generation error:", error);
+      toast.error(t("quiz.alerts.generateError") + " " + error.message);
+      setGameState("config");
+    }
+  });
+
   const handleOpenConfig = () => {
     setGameState("config");
   };
@@ -48,50 +81,15 @@ export default function QuizClient() {
     setGameState("generating");
     
     try {
-      const headers: Record<string, string> = { 
-        "Content-Type": "application/json",
-      };
-
-      if (user) {
-        const token = await user.getIdToken();
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      const response = await fetch("/api/generate-quiz", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          company: companyName,
-          jobTitle: jobTitle,
-          count: selectedCount,
-          language: language
-        }),
+      submit({
+        company: companyName,
+        jobTitle: jobTitle,
+        count: selectedCount,
+        language: language
       });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error(t("defaults.loginRequiredToQuiz"));
-        }
-        throw new Error(t("quiz.alerts.apiError"));
-      }
-
-      const generatedQuestions: Question[] = await response.json();
-      
-      setActiveQuestions(generatedQuestions);
-      setCurrentQuestionIndex(0);
-      setScore(0);
-      setSelectedOption(null);
-      setGameState("playing");
     } catch (error) {
       console.error("Quiz generation error:", error);
-      const msg = error instanceof Error ? error.message : "";
-      if (msg.includes("fetch")) {
-        toast.error(t("errors.network"));
-      } else if (msg.includes("Too Many Requests")) {
-        toast.error(msg);
-      } else {
-        toast.error(t("quiz.alerts.generateError") + " " + msg);
-      }
+      toast.error(t("quiz.alerts.generateError"));
       setGameState("config");
     }
   };
@@ -167,18 +165,37 @@ export default function QuizClient() {
 
         {/* Generating Screen */}
         {gameState === "generating" && (
-          <div className="glass-card w-full max-w-3xl p-8 rounded-3xl border border-outline-variant/30 slide-up">
-            <Skeleton className="h-8 w-3/4 mb-8 mx-auto" />
-            <div className="space-y-4">
-               <Skeleton className="h-16 w-full rounded-xl" />
-               <Skeleton className="h-16 w-full rounded-xl" />
-               <Skeleton className="h-16 w-full rounded-xl" />
-               <Skeleton className="h-16 w-full rounded-xl" />
-            </div>
-            <div className="mt-8 text-center">
-              <p className="text-on-surface-variant font-body-lg animate-pulse">
-                {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
-              </p>
+          <div className="glass-card w-full max-w-4xl p-8 rounded-3xl border border-outline-variant/30 slide-up">
+            <h2 className="text-2xl font-bold mb-6 text-center text-primary animate-pulse">
+              {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
+            </h2>
+            <div className="space-y-6">
+              {object?.questions?.map((q, i) => (
+                <div key={i} className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 slide-up">
+                  <h3 className="font-semibold text-lg mb-3">
+                    {q?.question || <Skeleton className="h-6 w-3/4 inline-block" />}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[0, 1, 2, 3].map((optIdx) => (
+                      <div key={optIdx} className="p-3 border border-outline-variant/30 rounded-lg min-h-[50px] flex items-center bg-surface-container">
+                        {q?.options?.[optIdx] || <Skeleton className="h-5 w-1/2" />}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              {(!object?.questions || object.questions.length < selectedCount) && (
+                <div className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 opacity-50 slide-up">
+                   <Skeleton className="h-6 w-3/4 mb-3" />
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Skeleton className="h-[50px] w-full rounded-lg" />
+                      <Skeleton className="h-[50px] w-full rounded-lg" />
+                      <Skeleton className="h-[50px] w-full rounded-lg" />
+                      <Skeleton className="h-[50px] w-full rounded-lg" />
+                   </div>
+                </div>
+              )}
             </div>
           </div>
         )}
