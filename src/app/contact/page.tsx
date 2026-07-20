@@ -3,6 +3,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export default function ContactPage() {
   return (
@@ -50,7 +51,7 @@ export default function ContactPage() {
 
         <div className="glass-card p-8 rounded-3xl shadow-sm">
           <h2 className="font-headline-md text-headline-md text-on-surface mb-6">أرسل رسالة</h2>
-          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("تم إرسال رسالتك بنجاح! شكراً لتواصلك معنا."); }}>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); toast.success("تم إرسال رسالتك بنجاح! شكراً لتواصلك معنا."); }}>
             <div>
               <label className="block text-sm font-bold text-on-surface mb-1">الاسم الكامل</label>
               <input type="text" className="w-full bg-surface-container border border-outline-variant rounded-xl p-3 focus:outline-none focus:border-primary transition-colors" placeholder="أدخل اسمك" required />

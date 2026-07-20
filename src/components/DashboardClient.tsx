@@ -2,7 +2,7 @@
 
 import { Settings, ArrowLeft, Activity, Trophy, Clock, Mic, FileText, ListChecks } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
@@ -36,6 +36,14 @@ export default function DashboardClient() {
     }
   }, [user, loading, router]);
 
+  const avgScore = useMemo(() => {
+    if (!activities || activities.length === 0) return null;
+    const scored = activities.filter(i => i.analysis?.score || i.score);
+    if (scored.length === 0) return null;
+    const sum = scored.reduce((acc, curr) => acc + (curr.analysis?.score || curr.score || 0), 0);
+    return Math.round(sum / scored.length);
+  }, [activities]);
+
   if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
@@ -43,7 +51,8 @@ export default function DashboardClient() {
       </div>
     );
   }
-  
+
+  if (!activities) return null;
   return (
     <div className="flex flex-col flex-1 bg-surface text-on-surface min-h-screen">
       <Navbar />
@@ -67,7 +76,7 @@ export default function DashboardClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
             { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? "..." : activities.length.toString() },
-            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? "..." : (activities.filter(i => i.analysis?.score || i.score).length > 0 ? Math.round(activities.filter(i => i.analysis?.score || i.score).reduce((acc, curr) => acc + (curr.analysis?.score || curr.score || 0), 0) / activities.filter(i => i.analysis?.score || i.score).length) + "%" : t("dashboard.stats.none")) },
+            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? "..." : (avgScore !== null ? avgScore + "%" : t("dashboard.stats.none")) },
             { icon: <Clock className="text-secondary w-6 h-6" />, label: t("dashboard.stats.estTime"), value: isFetching ? "..." : (activities.filter(a => a.type === 'interview').length * 15 + activities.filter(a => a.type === 'quiz').length * 5) + " " + t("dashboard.stats.minutes") }
           ].map((stat, i) => (
             <div key={i} className="glass-card rounded-2xl p-6 flex items-center gap-4 shadow-sm border border-transparent hover:border-outline-variant/30 transition-colors">

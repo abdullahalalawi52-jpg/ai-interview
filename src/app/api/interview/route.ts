@@ -48,6 +48,11 @@ export const maxDuration = 60;
  * - id: Message ID
  * - role: "model"
  * - parts: Array of text parts
+ * 
+ * @security 
+ * In development mode (NODE_ENV === 'development'), authentication is bypassed if it fails.
+ * This is to allow local testing without requiring a valid FIREBASE_PRIVATE_KEY.
+ * In production, strict authentication is enforced.
  */
 export async function POST(req: Request) {
   try {
@@ -96,7 +101,7 @@ export async function POST(req: Request) {
 6. لا تكرر الأسئلة.
 7. إذا أخطأ المرشح أو أعطى إجابة سطحية، واجهه بذلك بلباقة واطلب تفاصيل أكثر.
 8. ${language === 'en' ? 'CRITICAL: You MUST speak and respond ONLY in English. If the candidate uses Arabic, politely reply in English and continue the interview in English.' : 'تنبيه صارم: يُمنع منعاً باتاً استخدام أي كلمة باللغة الإنجليزية في حديثك. يجب أن تتحدث وتطرح الأسئلة وتتفاعل باللغة العربية حصراً (بنسبة 100%). قم بترجمة جميع المصطلحات التقنية والبرمجية إلى اللغة العربية.'}
-9. إذا شعرت أنك سألت 4-5 أسئلة تقريباً وحصلت على إجابات وافية، أخبره بوضوح أن المقابلة انتهت واشكره على وقته، ولا تسأل المزيد.
+9. إذا شعرت أنك سألت 4-5 أسئلة تقريباً وحصلت على إجابات وافية، أخبره بوضوح أن المقابلة انتهت واشكره على وقته، ولا تسأل المزيد. ويجب أن تضع العلامة [END_INTERVIEW] في نهاية رسالتك لإنهاء المقابلة برمجياً.
 10. ${!isBehavioral ? 'إذا كان سؤالك التقني عبارة عن مسألة برمجية تتطلب من المرشح كتابة كود (Coding Question)، يجب أن تضع علامة [CODE] في نهاية رسالتك تماماً.' : ''}`;
 
     if (resumeText) {

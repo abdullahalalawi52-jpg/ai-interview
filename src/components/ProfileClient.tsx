@@ -131,12 +131,12 @@ export default function ProfileClient() {
               </div>
             </div>
 
-            <h2 className="font-headline-md text-headline-md text-on-surface mt-8 mb-4">{t("profile.latestInterviews") || "أحدث النشاطات"}</h2>
+            <h2 className="font-headline-md text-headline-md text-on-surface mt-8 mb-4">{t("profile.latestInterviews")}</h2>
             <div className="glass-card rounded-3xl overflow-hidden shadow-sm border border-outline-variant/30">
               {isFetching ? (
                 <div className="p-8 flex justify-center"><div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" /></div>
               ) : activities.length === 0 ? (
-                <div className="p-8 text-center text-on-surface-variant">{t("profile.noInterviews") || "لا توجد نشاطات مسجلة بعد"}</div>
+                <div className="p-8 text-center text-on-surface-variant">{t("profile.noInterviews")}</div>
               ) : (
                 <div className="divide-y divide-outline-variant/20">
                   {activities.slice(0, 5).map((activity) => (

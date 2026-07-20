@@ -1,14 +1,14 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { LanguageProvider, useLanguage } from "./LanguageContext";
+import { LanguageProvider, useLanguage, TranslationKey } from "./LanguageContext";
 import { expect, test, describe } from "vitest";
 
 // A dummy component to consume the context and display values
-const TestComponent = ({ translationKey, count }: { translationKey: string; count?: number }) => {
+const TestComponent = ({ translationKey, count }: { translationKey: TranslationKey | string; count?: number }) => {
   const { t, language, setLanguage } = useLanguage();
   return (
     <div>
       <span data-testid="lang">{language}</span>
-      <span data-testid="translated">{t(translationKey, count !== undefined ? { count } : undefined)}</span>
+      <span data-testid="translated">{t(translationKey as TranslationKey, count !== undefined ? { count } : undefined)}</span>
       <button data-testid="change-lang" onClick={() => setLanguage("en")}>
         To English
       </button>

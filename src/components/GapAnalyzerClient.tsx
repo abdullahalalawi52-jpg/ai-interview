@@ -153,11 +153,13 @@ export default function GapAnalyzerClient() {
           </div>
 
           {loadingStep && (
-            <div className="flex flex-col items-center justify-center py-20 glass-card rounded-3xl shadow-lg border border-primary/20">
-              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-6" />
-              <p className="font-headline-md text-headline-md text-primary animate-pulse">
-                {loadingStep === 'data' ? t("gapAnalyzer.loadingData") : t("gapAnalyzer.loadingAI")}
-              </p>
+            <div className="w-full max-w-4xl mx-auto space-y-6 animate-pulse my-12">
+              <div className="h-40 bg-surface-variant/40 rounded-3xl w-full border border-outline-variant/30"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-64 bg-surface-variant/40 rounded-3xl w-full border border-outline-variant/30"></div>
+                <div className="h-64 bg-surface-variant/40 rounded-3xl w-full border border-outline-variant/30"></div>
+              </div>
+              <div className="h-32 bg-surface-variant/40 rounded-3xl w-full border border-outline-variant/30"></div>
             </div>
           )}
 
@@ -172,7 +174,7 @@ export default function GapAnalyzerClient() {
                   <div className="absolute inset-0 bg-primary/20 rounded-3xl animate-ping opacity-50 duration-1000"></div>
                   <Sparkles className="w-10 h-10 relative z-10" />
                 </div>
-                <h3 className="font-headline-sm font-bold text-on-surface mb-3">لا توجد بيانات للعرض</h3>
+                <h3 className="font-headline-sm font-bold text-on-surface mb-3">{t("gapAnalyzer.noData")}</h3>
                 <p className="font-body-lg text-on-surface-variant w-full whitespace-normal leading-relaxed">
                   {error}
                 </p>

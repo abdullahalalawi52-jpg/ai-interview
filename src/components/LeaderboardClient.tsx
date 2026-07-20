@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Trophy, Medal, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage, TranslationKey } from "@/context/LanguageContext";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore/lite";
 
@@ -52,7 +52,7 @@ export default function LeaderboardClient() {
           const data = doc.data();
           return {
             id: doc.id,
-            name: data.name || "مستخدم مجهول",
+            name: data.name || t("defaults.anonymousUser"),
             roleKey: data.roleKey || "appDeveloper",
             score: data.totalScore || 0,
             levelKey: data.levelKey || getLevelKey(data.totalScore || 0),
@@ -69,7 +69,7 @@ export default function LeaderboardClient() {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [t]);
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
@@ -139,13 +139,13 @@ export default function LeaderboardClient() {
                     </div>
                     <div>
                       <h3 className="font-bold text-on-surface">{user.name}</h3>
-                      <p className="text-xs text-on-surface-variant">{t(`leaderboard.roles.${user.roleKey}`)}</p>
+                      <p className="text-xs text-on-surface-variant">{t(`leaderboard.roles.${user.roleKey}` as TranslationKey)}</p>
                     </div>
                   </div>
 
                   <div className="col-span-3 sm:col-span-4 hidden sm:flex items-center gap-2">
                     <div className="bg-surface-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-outline-variant/30">
-                      {user.badge} {t(`leaderboard.levels.${user.levelKey}`)}
+                      {user.badge} {t(`leaderboard.levels.${user.levelKey}` as TranslationKey)}
                     </div>
                   </div>
 

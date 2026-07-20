@@ -43,6 +43,8 @@ import { LanguageProvider, Language } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { cookies } from "next/headers";
 
+import { Toaster } from "react-hot-toast";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -116,6 +118,7 @@ export default async function RootLayout({
           <LanguageProvider initialLanguage={initialLang}>
             <AuthProvider>
               {children}
+              <Toaster position="bottom-center" />
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           
           if (!userSnap.exists()) {
             await setDoc(userRef, {
-              name: currentUser.displayName || "مستخدم مجهول",
+              name: currentUser.displayName || "Anonymous User",
               email: currentUser.email,
               photoURL: currentUser.photoURL || "",
               totalScore: 0,

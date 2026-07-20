@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Loader2 } from "lucide-react";
@@ -39,7 +40,7 @@ export default function QuizClient() {
 
   const handleStart = async () => {
     if (!companyName.trim() || !jobTitle.trim()) {
-      alert(t("quiz.alerts.fillAll"));
+      toast.error(t("quiz.alerts.fillAll"));
       return;
     }
 
@@ -68,7 +69,7 @@ export default function QuizClient() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("يجب عليك تسجيل الدخول أولاً لإنشاء اختبار.");
+          throw new Error(t("defaults.loginRequiredToQuiz"));
         }
         throw new Error(t("quiz.alerts.apiError"));
       }
@@ -81,14 +82,14 @@ export default function QuizClient() {
       setSelectedOption(null);
       setGameState("playing");
     } catch (error) {
-      console.error(error);
+      console.error("Quiz generation error:", error);
       const msg = error instanceof Error ? error.message : "";
-      if (msg === "Failed to fetch" || msg.includes("fetch")) {
-        alert(t("errors.network"));
-      } else if (msg === "يجب عليك تسجيل الدخول أولاً لإنشاء اختبار.") {
-        alert(msg);
+      if (msg.includes("fetch")) {
+        toast.error(t("errors.network"));
+      } else if (msg.includes("Too Many Requests")) {
+        toast.error(msg);
       } else {
-        alert(t("quiz.alerts.generateError") + " " + msg);
+        toast.error(t("quiz.alerts.generateError") + " " + msg);
       }
       setGameState("config");
     }
@@ -113,7 +114,7 @@ export default function QuizClient() {
           // Save quiz history
           await addDoc(collection(db, "users", user.uid, "quizzes"), {
             company: companyName || "Google",
-            jobTitle: jobTitle || "مهندس برمجيات",
+            jobTitle: jobTitle || t("defaults.softwareEngineer"),
             score: finalScore,
             total: activeQuestions.length,
             createdAt: serverTimestamp()

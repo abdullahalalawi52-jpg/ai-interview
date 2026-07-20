@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Interview Prep | تحضير المقابلة الذكية
+
+AI Interview Prep is a Next.js application that simulates technical and behavioral interviews using Google's Gemini AI. It provides an immersive experience with speech recognition, text-to-speech, and immediate performance evaluations.
+
+## Features
+
+- **AI-Powered Interviews**: Dynamic conversational interviews tailored to your job title and specialization.
+- **Bilingual Support**: Full support for both Arabic and English.
+- **Voice Interactions**: Integrated speech-to-text (SpeechRecognition) and text-to-speech capabilities.
+- **ATS Resume Parsing**: Upload your resume to have it parsed and incorporated into the interview context.
+- **Technical Quizzes**: Generate AI-based technical quizzes related to your role.
+- **Leaderboard**: Compete with others and track your progress.
+- **Secure Data Storage**: Uses Firebase Auth for user management and Firestore for saving interview history securely.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.x or later
+- npm or yarn
+
+### Environment Variables
+
+Rename `.env.example` to `.env.local` and provide the following keys:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Google Gemini API Key
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+
+# Firebase Client Keys
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=1:your_app_id:web:your_web_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+
+# Firebase Admin SDK (Server-side)
+FIREBASE_PROJECT_ID=your_project
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your_project.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Running Tests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project uses `vitest` for unit testing.
 
-## Deploy on Vercel
+To run the test suite:
+```bash
+npm run test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security & Architecture
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Firestore Rules**: User data is strictly protected. Users can only read and write to their own `/users/{userId}` profile document.
+- **API Routes**: API routes are protected via a custom authentication middleware (`verifyAuth`) that verifies Firebase ID Tokens.
+- **State Management**: Uses React Context for Theme, Auth, and Language. 
+- **Internationalization (i18n)**: Implemented using a custom statically typed translation system, ensuring type safety for all translation keys.
+
+## License
+
+This project is licensed under the MIT License.

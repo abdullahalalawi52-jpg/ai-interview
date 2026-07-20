@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BrainCircuit, Share2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { toast } from "react-hot-toast";
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -43,7 +44,7 @@ export default function Footer() {
                 }).catch(console.error);
               } else {
                 navigator.clipboard.writeText(window.location.origin);
-                alert(t("footer.copied"));
+                toast.success(t("footer.copied"));
               }
             }}
             className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant transition-all" 

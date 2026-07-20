@@ -65,7 +65,7 @@ export default function InterviewClient() {
 
   const isFinished = messages.some(m => {
     const textPart = m.parts?.find((p: { type: string }) => p.type === 'text') as { type: 'text', text: string } | undefined;
-    return textPart && (textPart.text.includes("المقابلة انتهت") || textPart.text.includes("انتهت المقابلة") || textPart.text.includes("Interview Finished") || textPart.text.includes("The interview is finished"));
+    return textPart && textPart.text.includes("[END_INTERVIEW]");
   });
 
   // Timer logic

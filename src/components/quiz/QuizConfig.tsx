@@ -35,7 +35,7 @@ export default function QuizConfig({
         <h1 className="font-headline-lg text-headline-lg text-on-surface">{t("quiz.config.title")}</h1>
       </div>
       <p className="text-on-surface-variant font-body-md mb-8 ltr:pl-16 rtl:pr-16">
-        {language === 'ar' ? 'قم بتعبئة بيانات الوظيفة المستهدفة ليقوم الذكاء الاصطناعي بتوليد أسئلة مخصصة لتقييم مهاراتك بدقة.' : 'Fill in the target job details so our AI can generate customized questions to accurately assess your skills.'}
+        {t("quiz.start.desc")}
       </p>
       
       <div className="space-y-5">

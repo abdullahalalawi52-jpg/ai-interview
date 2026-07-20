@@ -63,7 +63,7 @@ describe("useInterviewSave hook", () => {
       specialization: "Web",
       interviewType: "technical"
     };
-    const messages = [{ id: "1", role: "user", content: "Hi" }];
+    const messages: any[] = [{ id: "1", role: "user", content: "Hi" }];
     
     const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
 
@@ -87,7 +87,7 @@ describe("useInterviewSave hook", () => {
       specialization: "Web",
       interviewType: "technical"
     };
-    const messages = [{ id: "1", role: "user", content: "Hi" }];
+    const messages: any[] = [{ id: "1", role: "user", content: "Hi" }];
 
     const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
 

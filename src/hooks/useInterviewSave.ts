@@ -38,8 +38,8 @@ export function useInterviewSave(
               messages: serializableMessages,
               createdAt: serverTimestamp(),
               company: interviewConfig.company || "Google",
-              jobTitle: interviewConfig.jobTitle || "مهندس برمجيات",
-              specialization: interviewConfig.specialization || "تطوير الويب",
+              jobTitle: interviewConfig.jobTitle || "Software Engineer",
+              specialization: interviewConfig.specialization || "Web Development",
               interviewType: interviewConfig.interviewType,
               duration: elapsedTime
             });
@@ -56,8 +56,8 @@ export function useInterviewSave(
               messages: serializableMessages,
               createdAt: new Date().toISOString(),
               company: interviewConfig.company || "Google",
-              jobTitle: interviewConfig.jobTitle || "مهندس برمجيات",
-              specialization: interviewConfig.specialization || "تطوير الويب",
+              jobTitle: interviewConfig.jobTitle || "Software Engineer",
+              specialization: interviewConfig.specialization || "Web Development",
               interviewType: interviewConfig.interviewType,
               duration: elapsedTime
             }));

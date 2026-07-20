@@ -9,22 +9,26 @@ export function useTextToSpeech(
   const spokenTextLengthRef = useRef<Record<string, number>>({});
   const lastProcessedMessageId = useRef<string | null>(null);
 
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
+  const lastMessage = messages[messages.length - 1];
+  const lastMessageId = lastMessage?.id;
+  const lastMessageRole = lastMessage?.role;
+  
+  const textPart = lastMessage?.parts?.find(
+    (p: { type: string }) => p.type === "text"
+  ) as { type: "text"; text: string } | undefined;
 
-    if (lastMessage?.role === "assistant") {
+  const lastMessageText = textPart?.text || "";
+
+  useEffect(() => {
+    if (lastMessageRole === "assistant" && lastMessageId) {
       // If we switched to a new message, cancel any ongoing speech from previous ones
-      if (lastProcessedMessageId.current !== lastMessage.id) {
+      if (lastProcessedMessageId.current !== lastMessageId) {
         window.speechSynthesis.cancel();
-        lastProcessedMessageId.current = lastMessage.id;
+        lastProcessedMessageId.current = lastMessageId;
       }
 
-      const textPart = lastMessage.parts?.find(
-        (p: { type: string }) => p.type === "text"
-      ) as { type: "text"; text: string } | undefined;
-
-      const fullText = textPart?.text || "";
-      const spokenLength = spokenTextLengthRef.current[lastMessage.id] || 0;
+      const fullText = lastMessageText;
+      const spokenLength = spokenTextLengthRef.current[lastMessageId] || 0;
 
       if (fullText.length > spokenLength) {
         // extract the unspoken part
@@ -45,15 +49,15 @@ export function useTextToSpeech(
             }
           });
 
-          spokenTextLengthRef.current[lastMessage.id] = spokenLength + newlySpoken.length;
+          spokenTextLengthRef.current[lastMessageId] = spokenLength + newlySpoken.length;
         } else if (!isLoading && unspokenPart.trim().length > 0) {
           // If the message finished streaming and there's trailing text without punctuation
           const utterance = new SpeechSynthesisUtterance(unspokenPart.trim());
           utterance.lang = language === "en" ? "en-US" : "ar-SA";
           window.speechSynthesis.speak(utterance);
-          spokenTextLengthRef.current[lastMessage.id] = fullText.length;
+          spokenTextLengthRef.current[lastMessageId] = fullText.length;
         }
       }
     }
-  }, [messages, isLoading, language]);
+  }, [lastMessageId, lastMessageRole, lastMessageText, isLoading, language]);
 }

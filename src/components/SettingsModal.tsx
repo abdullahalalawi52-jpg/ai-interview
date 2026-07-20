@@ -21,6 +21,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [firstName, ...lastNameParts] = (user?.displayName || "").split(" ");
   const lastName = lastNameParts.join(" ");
 
+  const [formData, setFormData] = useState({
+    firstName: firstName || "",
+    lastName: lastName || "",
+    email: user?.email || "",
+    jobTarget: ""
+  });
+
   useEffect(() => {
     if (isOpen && modalRef.current) {
       modalRef.current.focus();
@@ -97,7 +104,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-lg py-md border-b border-surface-container-highest shrink-0">
           <h2 id="settings-modal-title" className="font-headline-md text-headline-md font-bold text-on-surface">{t("settingsModal.title")}</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-surface-variant transition-colors group" aria-label={t("settingsModal.close") || "إغلاق"}>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-surface-variant transition-colors group" aria-label={t("settingsModal.close")}>
             <X className="w-6 h-6 text-on-surface-variant group-hover:text-error transition-colors" />
           </button>
         </div>
@@ -163,26 +170,31 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   </div>
                 </div>
 
-                <form className="space-y-md" onSubmit={(e) => { e.preventDefault(); alert(t("settingsModal.profile.saveSuccess")); onClose(); }}>
+                <form className="space-y-md" onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  // In a real app we would save formData to backend here
+                  console.log("Saving data:", formData);
+                  onClose(); 
+                }}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                     <div className="space-y-xs">
                       <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.firstName")}</label>
-                      <input type="text" defaultValue={firstName} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
+                      <input type="text" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
                     </div>
                     <div className="space-y-xs">
                       <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.lastName")}</label>
-                      <input type="text" defaultValue={lastName} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
+                      <input type="text" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
                     </div>
                   </div>
                   
                   <div className="space-y-xs">
                     <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.email")}</label>
-                    <input type="email" defaultValue={user?.email || ""} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors text-left" dir="ltr" />
+                    <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors text-left" dir="ltr" />
                   </div>
 
                   <div className="space-y-xs">
                     <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.jobTarget")}</label>
-                    <input type="text" placeholder={t("settingsModal.profile.jobTargetPlaceholder") || "Software Engineer"} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
+                    <input type="text" value={formData.jobTarget} onChange={(e) => setFormData({...formData, jobTarget: e.target.value})} placeholder={t("settingsModal.profile.jobTargetPlaceholder")} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
                   </div>
 
                   <div className="pt-md flex justify-end">
@@ -203,9 +215,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 
                 <div className="space-y-md">
                   {[
-                    { title: t("settingsModal.notifications.items.0.title"), desc: t("settingsModal.notifications.items.0.desc") },
-                    { title: t("settingsModal.notifications.items.1.title"), desc: t("settingsModal.notifications.items.1.desc") },
-                    { title: t("settingsModal.notifications.items.2.title"), desc: t("settingsModal.notifications.items.2.desc") }
+                    { title: t("settingsModal.notifications.items.reminders.title"), desc: t("settingsModal.notifications.items.reminders.desc") },
+                    { title: t("settingsModal.notifications.items.tips.title"), desc: t("settingsModal.notifications.items.tips.desc") },
+                    { title: t("settingsModal.notifications.items.updates.title"), desc: t("settingsModal.notifications.items.updates.desc") }
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between p-md border border-surface-container-highest rounded-xl hover:border-primary/30 transition-colors">
                       <div>
@@ -241,7 +253,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 }
 
 // Settings Subcomponents
-function AppearanceTab({ t }: { t: (_translateKey: string) => string }) {
+import { TranslationKey } from "@/context/LanguageContext";
+function AppearanceTab({ t }: { t: (_translateKey: TranslationKey) => string }) {
   const { theme, setTheme } = useTheme();
   return (
     <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
@@ -286,7 +299,7 @@ interface SecurityUser {
   uid?: string;
 }
 
-function SecurityTab({ t, user }: { t: (_translateKey: string) => string; user: SecurityUser | null }) {
+function SecurityTab({ t, user }: { t: (_translateKey: TranslationKey) => string; user: SecurityUser | null }) {
   return (
     <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
       <div>
@@ -330,7 +343,7 @@ function SecurityTab({ t, user }: { t: (_translateKey: string) => string; user: 
   );
 }
 
-function BillingTab({ t }: { t: (_translateKey: string) => string }) {
+function BillingTab({ t }: { t: (_translateKey: TranslationKey) => string }) {
   return (
     <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
       <div>

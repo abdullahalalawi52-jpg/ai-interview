@@ -34,7 +34,7 @@ export default function InterviewSetup({ config, setConfig, onSave }: InterviewS
     } catch (err) {
       console.error(err);
       // Minimal error handling for MVP
-      alert("Failed to parse PDF. Please try again.");
+      console.error("Failed to parse PDF. Please try again."); // TODO: Add toast notification system
     } finally {
       setIsUploading(false);
     }

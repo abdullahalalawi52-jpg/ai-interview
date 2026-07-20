@@ -36,7 +36,8 @@
     "f3Desc": "Strengths and weaknesses for each answer. Get an accurate assessment of content, body language, and tone of voice.",
     "ctaTitle": "Start your journey to your dream job today",
     "ctaDesc": "Join thousands of professionals who trusted \"AI Interview Prep\" to improve their career opportunities.",
-    "ctaBtn": "Sign up for free and start training"
+    "ctaBtn": "Sign up for free and start training",
+    "uploadCvBtn": "Upload Resume"
   },
   "footer": {
     "rights": "All rights reserved.",
@@ -253,7 +254,8 @@
       "professionalism": "Professionalism & Terminology",
       "aiNote": "AI Note:"
     },
-    "topics": "Recommended Topics to Study"
+    "topics": "Recommended Topics to Study",
+    "noData": "No data to display"
   },
   "profile": {
     "title": "Profile",
@@ -305,25 +307,26 @@
       "email": "Email Address",
       "jobTarget": "Target Job Title",
       "saveSuccess": "Changes saved successfully!",
-      "saveBtn": "Save Changes"
+      "saveBtn": "Save Changes",
+      "jobTargetPlaceholder": "e.g., Frontend Developer"
     },
     "notifications": {
       "title": "Notification Preferences",
       "desc": "Choose the type of notifications you want to receive.",
-      "items": [
-        {
+      "items": {
+        "reminders": {
           "title": "Interview Reminders",
           "desc": "Receive reminders before scheduled practice sessions."
         },
-        {
+        "tips": {
           "title": "Weekly Tips & Guides",
           "desc": "Latest articles and tips for passing interviews."
         },
-        {
+        "updates": {
           "title": "System Updates",
           "desc": "Notifications about new features and bug fixes."
         }
-      ]
+      }
     },
     "appearance": {
       "title": "Appearance Settings",
@@ -359,7 +362,8 @@
     "underDev": {
       "title": "This Section is Under Development",
       "desc": "We are working hard to add more settings soon."
-    }
+    },
+    "close": "Close"
   },
   "atsScanner": {
     "title": "ATS Resume Scanner",
@@ -391,5 +395,19 @@
     "zero": "No interviews",
     "one": "1 interview",
     "other": "{{count}} interviews"
+  },
+  "defaults": {
+    "softwareEngineer": "Software Engineer",
+    "webDevelopment": "Web Development",
+    "anonymousUser": "Anonymous User",
+    "closeMenu": "Close Menu",
+    "openMenu": "Open Menu",
+    "language": "Language",
+    "changeLanguage": "Change Language",
+    "theme": "Theme",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "readyToStart": "ready to start the interview",
+    "loginRequiredToQuiz": "You must login first to create a quiz."
   }
 }

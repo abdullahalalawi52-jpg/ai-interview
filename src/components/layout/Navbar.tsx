@@ -57,7 +57,7 @@ export default function Navbar() {
           <button 
             className="md:hidden p-2 text-on-surface-variant hover:text-primary transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+            aria-label={isMobileMenuOpen ? t("defaults.closeMenu") : t("defaults.openMenu")}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -137,11 +137,11 @@ export default function Navbar() {
               <div className="h-px bg-outline-variant/30 my-2"></div>
               
               <div className="flex items-center justify-between px-4 py-2">
-                <span className="font-bold text-on-surface-variant">{language === "ar" ? "اللغة" : "Language"}</span>
+                <span className="font-bold text-on-surface-variant">{t("defaults.language")}</span>
                 <button 
                   onClick={() => { toggleLanguage(); setIsMobileMenuOpen(false); }}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-variant transition-all text-sm font-bold border border-outline-variant/30" 
-                  aria-label={language === "ar" ? "تغيير اللغة" : "Change Language"}
+                  aria-label={t("defaults.changeLanguage")}
                 >
                   <Globe className="w-4 h-4" />
                   <span>{language === "ar" ? "English" : "العربية"}</span>
@@ -150,11 +150,11 @@ export default function Navbar() {
 
               {mounted && (
                 <div className="flex items-center justify-between px-4 py-2">
-                  <span className="font-bold text-on-surface-variant">{language === "ar" ? "المظهر" : "Theme"}</span>
+                  <span className="font-bold text-on-surface-variant">{t("defaults.theme")}</span>
                   <button 
                     onClick={() => { toggleTheme(); setIsMobileMenuOpen(false); }}
                     className="p-2 rounded-full text-on-surface-variant bg-surface-container border border-outline-variant/30 hover:text-primary hover:bg-surface-variant transition-colors"
-                    aria-label={theme === "dark" ? "الوضع الفاتح" : "الوضع المظلم"}
+                    aria-label={theme === "dark" ? t("defaults.lightMode") : t("defaults.darkMode")}
                   >
                     {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>

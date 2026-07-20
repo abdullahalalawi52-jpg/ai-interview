@@ -6,10 +6,21 @@ import en from "@/i18n/en.json";
 
 export type Language = "ar" | "en";
 
+// Strict type for translation keys using dot notation
+type RecursiveKeyOf<TObj extends object> = {
+  [TKey in keyof TObj & (string | number)]: TObj[TKey] extends any[]
+    ? `${TKey}`
+    : TObj[TKey] extends object
+    ? `${TKey}` | `${TKey}.${RecursiveKeyOf<TObj[TKey]>}`
+    : `${TKey}`;
+}[keyof TObj & (string | number)];
+
+export type TranslationKey = RecursiveKeyOf<typeof en>;
+
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string, variables?: Record<string, string | number>) => string;
+  t: (key: TranslationKey, variables?: Record<string, string | number>) => string;
 }
 
 const dictionaries = { ar, en };
@@ -65,7 +76,7 @@ export function LanguageProvider({
     return value;
   };
 
-  const t = (key: string, variables?: Record<string, string | number>) => {
+  const t = (key: TranslationKey, variables?: Record<string, string | number>) => {
     let value: unknown = undefined;
 
     if (variables && typeof variables.count === "number") {
