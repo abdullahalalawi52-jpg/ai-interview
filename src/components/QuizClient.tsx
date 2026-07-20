@@ -52,7 +52,7 @@ export default function QuizClient() {
   const { submit, object } = useObject({
     api: '/api/generate-quiz',
     schema: questionSchema,
-    onFinish({ object: parsedObject }: { object: z.infer<typeof questionSchema> }) {
+    onFinish({ object: parsedObject }: { object?: z.infer<typeof questionSchema> }) {
       if (parsedObject?.questions) {
         setActiveQuestions(parsedObject.questions as Question[]);
         setCurrentQuestionIndex(0);
@@ -170,7 +170,8 @@ export default function QuizClient() {
               {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
             </h2>
             <div className="space-y-6">
-              {object?.questions?.map((q: NonNullable<z.infer<typeof questionSchema>['questions']>[number], i: number) => (
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {object?.questions?.map((q: any, i: number) => (
                 <div key={i} className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 slide-up">
                   <h3 className="font-semibold text-lg mb-3">
                     {q?.question || <Skeleton className="h-6 w-3/4 inline-block" />}
