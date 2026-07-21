@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    // Parse the PDF using the v2 API
-    const pdf = new PDFParse({ data: uint8Array });
-    const result = await pdf.getText();
+    // Parse the PDF
+    const pdfParse = require("pdf-parse");
+    const result = await pdfParse(Buffer.from(arrayBuffer));
     const text = result.text;
 
     return NextResponse.json({ text });

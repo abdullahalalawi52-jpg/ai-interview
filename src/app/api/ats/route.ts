@@ -4,8 +4,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PDFParse } = require("pdf-parse");
+// Dynamic import is used inside the handler to prevent Serverless crashing on load
 
 /**
  * POST /api/ats
@@ -53,10 +52,9 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     let resumeText = "";
     try {
-      const parser = new PDFParse({ data: buffer });
-      const data = await parser.getText();
+      const pdfParse = require("pdf-parse");
+      const data = await pdfParse(buffer);
       resumeText = data.text;
-      await parser.destroy();
     } catch (e: unknown) {
       const error = e as Error;
       console.error("Error parsing PDF", error);
