@@ -12,8 +12,8 @@ const questionSchema = z.object({
       id: z.number(),
       category: z.string(),
       question: z.string(),
-      options: z.array(z.string()).length(4, "يجب أن تكون هناك 4 خيارات بالضبط"),
-      answer: z.number().min(0).max(3, "الإجابة الصحيحة يجب أن تكون الفهرس (من 0 إلى 3)"),
+      options: z.array(z.string()),
+      answer: z.number(),
     })
   ),
 });

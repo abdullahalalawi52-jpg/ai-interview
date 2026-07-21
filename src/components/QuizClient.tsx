@@ -53,12 +53,15 @@ export default function QuizClient() {
     api: '/api/generate-quiz',
     schema: questionSchema,
     onFinish({ object: parsedObject }: { object?: z.infer<typeof questionSchema> }) {
-      if (parsedObject?.questions) {
+      if (parsedObject?.questions && parsedObject.questions.length > 0) {
         setActiveQuestions(parsedObject.questions as Question[]);
         setCurrentQuestionIndex(0);
         setScore(0);
         setSelectedOption(null);
         setGameState("playing");
+      } else {
+        toast.error("حدث خطأ أثناء توليد الأسئلة أو لا توجد أسئلة كافية. يرجى المحاولة مرة أخرى.");
+        setGameState("config");
       }
     },
     onError(error: Error) {
