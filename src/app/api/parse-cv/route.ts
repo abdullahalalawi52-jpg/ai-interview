@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// @ts-expect-error - pdf-parse has no default export
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,15 +15,16 @@ export async function POST(req: NextRequest) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const uint8Array = new Uint8Array(arrayBuffer);
 
-    // Parse the PDF
-    const data = await pdfParse(buffer);
-    const text = data.text;
+    // Parse the PDF using the v2 API
+    const pdf = new PDFParse({ data: uint8Array });
+    const result = await pdf.getText();
+    const text = result.text;
 
     return NextResponse.json({ text });
   } catch (error) {
     console.error("Error parsing CV:", error);
-    return NextResponse.json({ error: "Failed to parse CV" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to parse CV: " + (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

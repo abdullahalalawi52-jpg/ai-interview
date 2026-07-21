@@ -103,7 +103,7 @@ export default function DashboardClient() {
               </div>
               <div>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">{stat.label}</p>
-                <p className="font-headline-md text-headline-md text-on-surface">{stat.value}</p>
+                <div className="font-headline-md text-headline-md text-on-surface">{stat.value}</div>
               </div>
             </div>
           ))}

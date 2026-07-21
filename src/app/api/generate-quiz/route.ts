@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { google, DEFAULT_MODEL } from "@/lib/ai";
 import { streamObject } from "ai";
 import { z } from "zod";
 import { ratelimit } from "@/lib/ratelimit";
@@ -36,7 +36,7 @@ const questionSchema = z.object({
  *   - options: Array of 4 string options
  *   - answer: Index of the correct option (0-3)
  *   - explanation: Brief explanation of the correct answer
- */
+ * */
 export async function POST(req: Request) {
   try {
     // 2. Rate Limiting (Using IP address since auth is optional)
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
     // طلب توليد الأسئلة من Gemini
     const result = await streamObject({
-      model: google("gemini-1.5-flash-8b"),
+      model: google(DEFAULT_MODEL),
       schema: questionSchema,
       prompt: `أنت مُحاور تقني ومهني خبير تعمل في وظيفة إجراء مقابلات وظيفية دقيقة.
       مهمتك هي كتابة ${count} أسئلة خيارات متعددة (Multiple Choice) لاختبار مرشح يتقدم لوظيفة "${jobTitle}" في شركة "${company}".

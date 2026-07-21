@@ -13,6 +13,7 @@ import { InterviewConfig } from "@/types/interview";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { Skeleton } from "@/components/ui/Skeleton";
+import toast from "react-hot-toast";
 
 
 import InterviewSetup from "@/components/interview/InterviewSetup";
@@ -48,10 +49,18 @@ export default function InterviewClient() {
     headers: token ? { "Authorization": `Bearer ${token}` } : undefined
   }), [token, interviewConfig, language]);
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, error } = useChat({
     transport
   });
   const isLoading = status === 'streaming' || status === 'submitted';
+
+  // Handle chat errors
+  useEffect(() => {
+    if (error) {
+      console.error("Chat error:", error);
+      toast.error(language === 'ar' ? "حدث خطأ أثناء التواصل مع الذكاء الاصطناعي. قد يكون مفتاح API غير صالح." : "Error communicating with AI. The API key might be invalid.");
+    }
+  }, [error, language]);
 
   const [hasStarted, setHasStarted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);

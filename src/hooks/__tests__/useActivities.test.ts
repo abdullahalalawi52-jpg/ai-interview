@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { useActivities } from '../useActivities';
 import * as firestoreLite from 'firebase/firestore/lite';
 
@@ -49,7 +49,7 @@ describe('useActivities hook', () => {
       ]
     };
 
-    (firestoreLite.getDocs as any).mockResolvedValueOnce(mockInterviews).mockResolvedValueOnce(mockQuizzes);
+    (firestoreLite.getDocs as Mock).mockResolvedValueOnce(mockInterviews).mockResolvedValueOnce(mockQuizzes);
 
     const { result } = renderHook(() => useActivities('user123'));
     
@@ -68,7 +68,7 @@ describe('useActivities hook', () => {
   });
 
   it('should handle errors gracefully', async () => {
-    (firestoreLite.getDocs as any).mockRejectedValueOnce(new Error('Firebase Error'));
+    (firestoreLite.getDocs as Mock).mockRejectedValueOnce(new Error('Firebase Error'));
 
     const { result } = renderHook(() => useActivities('user123'));
     

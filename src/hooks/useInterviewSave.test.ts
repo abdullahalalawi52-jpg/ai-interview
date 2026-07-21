@@ -8,21 +8,21 @@ const mockLocalStorage = {
   getItem: (key: string) => store[key] || null,
   setItem: (key: string, value: string) => { 
     store[key] = value; 
-    (mockLocalStorage as any)[key] = value;
+    (mockLocalStorage as Record<string, unknown>)[key] = value;
   },
   clear: () => { 
     for (const k in store) {
       delete store[k]; 
-      delete (mockLocalStorage as any)[k];
+      delete (mockLocalStorage as Record<string, unknown>)[k];
     }
   },
   removeItem: (key: string) => { 
     delete store[key]; 
-    delete (mockLocalStorage as any)[key];
+    delete (mockLocalStorage as Record<string, unknown>)[key];
   },
   key: (index: number) => Object.keys(store)[index] || null,
   get length() { return Object.keys(store).length; }
-} as any;
+} as unknown as Storage;
 Object.defineProperty(global, 'localStorage', { value: mockLocalStorage, writable: true, configurable: true });
 
 // Mock firebase
@@ -41,7 +41,7 @@ vi.mock("firebase/firestore/lite", () => ({
 }));
 
 // Mock Auth
-let currentMockUser: any = null;
+let currentMockUser: { uid: string } | null = null;
 vi.mock("@/context/AuthContext", () => ({
   useAuth: () => ({
     user: currentMockUser,
@@ -63,7 +63,7 @@ describe("useInterviewSave hook", () => {
       specialization: "Web",
       interviewType: "technical"
     };
-    const messages: any[] = [{ id: "1", role: "user", content: "Hi" }];
+    const messages: { id: string, role: "user" | "system" | "assistant", content: string, parts: { type: "text", text: string }[] }[] = [{ id: "1", role: "user", content: "Hi", parts: [{ type: 'text', text: 'Hi' }] }];
     
     const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
 
@@ -87,7 +87,7 @@ describe("useInterviewSave hook", () => {
       specialization: "Web",
       interviewType: "technical"
     };
-    const messages: any[] = [{ id: "1", role: "user", content: "Hi" }];
+    const messages: { id: string, role: "user" | "system" | "assistant", content: string, parts: { type: "text", text: string }[] }[] = [{ id: "1", role: "user", content: "Hi", parts: [{ type: 'text', text: 'Hi' }] }];
 
     const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
 

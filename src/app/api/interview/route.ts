@@ -1,12 +1,8 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { google, DEFAULT_MODEL } from "@/lib/ai";
 import { streamText, ModelMessage } from "ai";
 import { z } from "zod";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
-
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || "",
-});
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant", "system", "tool", "data"]),
@@ -124,7 +120,7 @@ export async function POST(req: Request) {
 
     console.log(">>> [POST /api/interview] Calling streamText");
     const result = streamText({
-      model: google("gemini-1.5-flash-8b"),
+      model: google(DEFAULT_MODEL),
       system: systemPrompt,
       messages: coreMessages as ModelMessage[],
     });

@@ -49,7 +49,7 @@ export default function QuizClient() {
 
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
-  const { submit, object } = useObject({
+  const { submit } = useObject({
     api: '/api/generate-quiz',
     schema: questionSchema,
     onFinish({ object: parsedObject }: { object?: z.infer<typeof questionSchema> }) {
@@ -170,25 +170,9 @@ export default function QuizClient() {
               {t("quiz.generating.desc").replace("{{job}}", jobTitle).replace("{{company}}", companyName)}
             </h2>
             <div className="space-y-6">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              {object?.questions?.map((q: any, i: number) => (
-                <div key={i} className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 slide-up">
-                  <h3 className="font-semibold text-lg mb-3">
-                    {q?.question || <Skeleton className="h-6 w-3/4 inline-block" />}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[0, 1, 2, 3].map((optIdx) => (
-                      <div key={optIdx} className="p-3 border border-outline-variant/30 rounded-lg min-h-[50px] flex items-center bg-surface-container">
-                        {q?.options?.[optIdx] || <Skeleton className="h-5 w-1/2" />}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              
-              {(!object?.questions || object.questions.length < selectedCount) && (
-                <div className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 opacity-50 slide-up">
-                   <Skeleton className="h-6 w-3/4 mb-3" />
+              {Array.from({ length: Math.min(selectedCount, 3) }).map((_, i) => (
+                <div key={i} className="p-4 border border-outline-variant/50 rounded-xl bg-surface-container/50 opacity-70 slide-up">
+                   <Skeleton className="h-6 w-3/4 mb-4" />
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <Skeleton className="h-[50px] w-full rounded-lg" />
                       <Skeleton className="h-[50px] w-full rounded-lg" />
@@ -196,7 +180,7 @@ export default function QuizClient() {
                       <Skeleton className="h-[50px] w-full rounded-lg" />
                    </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}

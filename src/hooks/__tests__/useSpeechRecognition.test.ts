@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useSpeechRecognition } from '../useSpeechRecognition';
 
 describe('useSpeechRecognition hook', () => {
-  let MockRecognition: any;
+  let MockRecognition: unknown;
 
   beforeEach(() => {
     class MockRecognitionClass {
@@ -15,8 +15,8 @@ describe('useSpeechRecognition hook', () => {
     }
     MockRecognition = MockRecognitionClass;
 
-    (global as any).window = Object.create(window);
-    (window as any).SpeechRecognition = MockRecognition;
+    (global as unknown as { window: typeof window }).window = Object.create(window);
+    (window as unknown as { SpeechRecognition: unknown }).SpeechRecognition = MockRecognition;
   });
 
   it('should initialize successfully', () => {

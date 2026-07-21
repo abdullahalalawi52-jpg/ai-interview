@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { google, DEFAULT_MODEL } from "@/lib/ai";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { NextResponse } from "next/server";
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
       .join('\n');
 
     const { object } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google(DEFAULT_MODEL),
       schema: gapAnalyzerSchema,
       prompt: `
         أنت خبير توظيف تقني ومُقيِّم مهارات ونفسي محترف.

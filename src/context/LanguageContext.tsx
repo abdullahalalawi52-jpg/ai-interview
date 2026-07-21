@@ -8,7 +8,7 @@ export type Language = "ar" | "en";
 
 // Strict type for translation keys using dot notation
 type RecursiveKeyOf<TObj extends object> = {
-  [TKey in keyof TObj & (string | number)]: TObj[TKey] extends any[]
+  [TKey in keyof TObj & (string | number)]: TObj[TKey] extends unknown[]
     ? `${TKey}`
     : TObj[TKey] extends object
     ? `${TKey}` | `${TKey}.${RecursiveKeyOf<TObj[TKey]>}`

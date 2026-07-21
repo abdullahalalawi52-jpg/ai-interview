@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { google, DEFAULT_MODEL } from "@/lib/ai";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { NextResponse } from "next/server";
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
     try {
       const { object } = await generateObject({
-        model: google("gemini-2.5-flash"),
+        model: google(DEFAULT_MODEL),
         schema: atsSchema,
         prompt,
         temperature: 0.1,

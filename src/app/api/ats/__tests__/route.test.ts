@@ -10,8 +10,9 @@ vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }));
 
-vi.mock("@ai-sdk/google", () => ({
+vi.mock("@/lib/ai", () => ({
   google: vi.fn(),
+  DEFAULT_MODEL: "gemini-2.0-flash",
 }));
 
 vi.mock("@/lib/auth-middleware", () => ({
