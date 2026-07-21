@@ -6,7 +6,7 @@ import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
 
 const gapAnalyzerSchema = z.object({
-  score: z.number().min(0).max(100).describe("درجة التقييم العام لأداء المرشح من 100"),
+  score: z.number().describe("درجة التقييم العام لأداء المرشح من 100"),
   strengths: z.array(z.string()).describe("قائمة بنقاط القوة التي أظهرها المرشح في المقابلة"),
   weaknesses: z.array(z.string()).describe("قائمة بالفجوات ونقاط الضعف التي تحتاج إلى تحسين"),
   recommendedTopics: z.array(

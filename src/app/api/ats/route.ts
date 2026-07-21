@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     `;
 
     const atsSchema = z.object({
-      matchScore: z.number().min(0).max(100).describe("من 0 إلى 100"),
+      matchScore: z.number().describe("من 0 إلى 100"),
       missingKeywords: z.array(z.string()).describe("مصفوفة بالكلمات المفتاحية الناقصة في السيرة الذاتية والموجودة في الوصف"),
       strengths: z.array(z.string()).describe("نقاط القوة الموجودة في السيرة الذاتية ومطابقة للوصف"),
       improvementTips: z.array(z.string()).describe("نصائح محددة جداً وقابلة للتطبيق لتحسين السيرة الذاتية")
