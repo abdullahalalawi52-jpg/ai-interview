@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Settings, Upload, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { InterviewConfig } from "@/types/interview";
+import { toast } from "react-hot-toast";
 
 interface InterviewSetupProps {
   config: InterviewConfig;
@@ -27,14 +28,16 @@ export default function InterviewSetup({ config, setConfig, onSave }: InterviewS
         body: formData
       });
       
-      if (!res.ok) throw new Error('Upload failed');
-      
       const data = await res.json();
-      setConfig({ ...config, resumeText: data.text });
-    } catch (err) {
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      
+      setConfig({ ...config, resumeText: data.text, resumeFileName: file.name });
+    } catch (err: unknown) {
       console.error(err);
-      // Minimal error handling for MVP
-      console.error("Failed to parse PDF. Please try again."); // TODO: Add toast notification system
+      toast.error(err instanceof Error ? err.message : "فشل في قراءة ملف PDF. يرجى المحاولة مرة أخرى.");
     } finally {
       setIsUploading(false);
     }
@@ -122,8 +125,8 @@ export default function InterviewSetup({ config, setConfig, onSave }: InterviewS
               ) : (
                 <Upload className="w-5 h-5 text-on-surface-variant" />
               )}
-              <span className={`text-sm font-bold ${config.resumeText ? 'text-success' : 'text-on-surface-variant'}`}>
-                {isUploading ? t("interview.setup.cvUploading") : config.resumeText ? t("interview.setup.cvParsed") : "PDF"}
+              <span className={`text-sm font-bold truncate max-w-[200px] ${config.resumeText ? 'text-success' : 'text-on-surface-variant'}`}>
+                {isUploading ? t("interview.setup.cvUploading") : config.resumeText ? (config.resumeFileName || t("interview.setup.cvParsed")) : "PDF"}
               </span>
             </div>
           </div>

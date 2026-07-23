@@ -4,4 +4,5 @@ export interface InterviewConfig {
   specialization: string;
   interviewType: string;
   resumeText?: string;
+  resumeFileName?: string;
 }
