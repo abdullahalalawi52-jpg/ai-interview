@@ -16,6 +16,13 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     // Parse the PDF
+    
+    // Polyfill DOMMatrix for pdf-parse (pdf.js dependency)
+    if (typeof global.DOMMatrix === 'undefined') {
+      // @ts-expect-error - Polyfill for older pdf.js
+      global.DOMMatrix = class DOMMatrix {};
+    }
+    
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pdfParse = require("pdf-parse");
     const result = await pdfParse(Buffer.from(arrayBuffer));
