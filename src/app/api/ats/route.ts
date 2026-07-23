@@ -80,7 +80,7 @@ ${language === 'en' ? 'CRITICAL: The entire JSON output, including all lists and
               {
                 type: "file",
                 data: buffer,
-                mimeType: "application/pdf"
+                mediaType: "application/pdf"
               }
             ]
           }
