@@ -50,31 +50,6 @@ export async function POST(req: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    let resumeText = "";
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pdfParse = require("pdf-parse");
-      const data = await pdfParse(buffer);
-      resumeText = data.text;
-    } catch (e: unknown) {
-      const error = e as Error;
-      console.error("Error parsing PDF", error);
-      // Remove stack trace
-      return NextResponse.json({ error: "حدث خطأ أثناء قراءة ملف الـ PDF." }, { status: 400 });
-    }
-
-    const prompt = `
-    أنت خبير توظيف ونظام ATS (Applicant Tracking System).
-    قم بتحليل السيرة الذاتية التالية مقارنة بالوصف الوظيفي المعطى.
-
-    الوصف الوظيفي (Job Description):
-    ${jobDescription}
-
-    السيرة الذاتية (Resume):
-    ${resumeText}
-
-    ${language === 'en' ? 'CRITICAL: The entire JSON output, including all lists and strings (missingKeywords, strengths, improvementTips), MUST be written in English.' : 'CRITICAL: The entire JSON output, including all lists and strings, MUST be written in Arabic.'}
-    `;
 
     const atsSchema = z.object({
       matchScore: z.number().describe("من 0 إلى 100"),
@@ -87,8 +62,29 @@ export async function POST(req: Request) {
       const { object } = await generateObject({
         model: google(DEFAULT_MODEL),
         schema: atsSchema,
-        prompt,
         temperature: 0.1,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `أنت خبير توظيف ونظام ATS (Applicant Tracking System).
+قم بتحليل السيرة الذاتية المرفقة (PDF) مقارنة بالوصف الوظيفي التالي.
+
+الوصف الوظيفي (Job Description):
+${jobDescription}
+
+${language === 'en' ? 'CRITICAL: The entire JSON output, including all lists and strings (missingKeywords, strengths, improvementTips), MUST be written in English.' : 'CRITICAL: The entire JSON output, including all lists and strings, MUST be written in Arabic.'}`
+              },
+              {
+                type: "file",
+                data: buffer,
+                mimeType: "application/pdf"
+              }
+            ]
+          }
+        ]
       });
 
       return NextResponse.json(object);

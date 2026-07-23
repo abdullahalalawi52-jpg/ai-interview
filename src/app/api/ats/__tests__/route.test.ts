@@ -25,12 +25,6 @@ vi.mock("@/lib/ratelimit", () => ({
   },
 }));
 
-vi.mock("pdf-parse", () => ({
-  PDFParse: class {
-    getText() { return Promise.resolve({ text: "Mocked resume content" }); }
-    destroy() { return Promise.resolve(); }
-  }
-}));
 
 describe("ATS API Route", () => {
   beforeEach(() => {
