@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["pdf-parse", "firebase-admin", "jwks-rsa", "jose"],
+  serverExternalPackages: ["firebase-admin", "jwks-rsa", "jose"],
   poweredByHeader: false,
   async headers() {
     return [
