@@ -4,8 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useActivities } from "@/hooks/useActivities";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { User, Activity, Trophy, Clock, Mail, Award, Calendar, ChevronRight, Mic, ListChecks } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,7 +26,6 @@ export default function ProfileClient() {
   if (loading || !user) {
     return (
       <div className="flex flex-col flex-1 bg-surface min-h-screen">
-        <Navbar />
         <main className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full">
           <Skeleton className="h-6 w-48 mb-8" />
           <div className="grid lg:grid-cols-3 gap-8">
@@ -48,7 +45,6 @@ export default function ProfileClient() {
              </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -68,7 +64,6 @@ export default function ProfileClient() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       
       <main id="main-content" className="flex-1 max-w-container-max mx-auto w-full px-gutter py-12 text-start" tabIndex={-1}>
         <div className="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
@@ -211,7 +206,6 @@ export default function ProfileClient() {
         </div>
       </main>
       
-      <Footer />
     </div>
   );
 }

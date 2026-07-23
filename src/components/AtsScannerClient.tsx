@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Upload, FileText, Briefcase, CheckCircle2, AlertCircle, TrendingUp, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
 export default function AtsScannerPage() {
   const { t, language } = useLanguage();
@@ -80,7 +79,6 @@ export default function AtsScannerPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12">
         <div className="text-center mb-12">
@@ -196,7 +194,9 @@ export default function AtsScannerPage() {
                       <circle cx="18" cy="18" r="16" fill="none" className={`stroke-current ${result.matchScore >= 80 ? 'text-green-500' : result.matchScore >= 50 ? 'text-amber-500' : 'text-error'}`} strokeWidth="3" strokeDasharray="100" strokeDashoffset={100 - result.matchScore} strokeLinecap="round" style={{ transition: 'stroke-dashoffset 1.5s ease-in-out' }}></circle>
                     </svg>
                     <div className="absolute flex flex-col items-center justify-center text-center">
-                      <span className={`text-4xl font-black ${result.matchScore >= 80 ? 'text-green-600' : result.matchScore >= 50 ? 'text-amber-600' : 'text-error'}`}>{result.matchScore}%</span>
+                      <span className={`text-4xl font-black ${result.matchScore >= 80 ? 'text-green-600' : result.matchScore >= 50 ? 'text-amber-600' : 'text-error'}`}>
+                        <AnimatedCounter value={result.matchScore} />%
+                      </span>
                       <span className="text-xs font-bold text-on-surface-variant mt-1 uppercase tracking-wider">
                         {result.matchScore >= 80 ? t("atsScanner.excellent") : result.matchScore >= 50 ? t("atsScanner.good") : t("atsScanner.poor")}
                       </span>
@@ -249,7 +249,6 @@ export default function AtsScannerPage() {
         </div>
       </main>
       
-      <Footer />
     </div>
   );
 }

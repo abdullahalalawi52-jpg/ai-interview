@@ -1,14 +1,11 @@
 "use client";
 
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-24 grid md:grid-cols-2 gap-12">
         <div>
           <h1 className="font-headline-xl text-headline-xl text-on-surface mb-6">تواصل معنا</h1>
@@ -70,7 +67,6 @@ export default function ContactPage() {
           </form>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

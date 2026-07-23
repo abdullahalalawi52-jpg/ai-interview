@@ -51,6 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider, Language } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import SkipLink from "@/components/SkipLink";
 import { cookies } from "next/headers";
 
@@ -123,7 +124,9 @@ export default async function RootLayout({
           <LanguageProvider initialLanguage={initialLang}>
             <SkipLink />
             <AuthProvider>
-              {children}
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
               <Toaster position="bottom-center" />
             </AuthProvider>
           </LanguageProvider>

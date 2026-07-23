@@ -4,6 +4,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
+import { Buffer } from "buffer";
 // Dynamic import is used inside the handler to prevent Serverless crashing on load
 
 /**

@@ -5,8 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { AlertTriangle, MinusCircle, CheckCircle2, TrendingUp, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -24,6 +22,12 @@ interface AnalysisData {
     professionalism: string;
     feedback: string;
   };
+  starMethodFeedback?: string;
+  idealAnswers?: {
+    question: string;
+    userAnswerSummary: string;
+    idealAnswer: string;
+  }[];
 }
 
 export default function GapAnalyzerClient() {
@@ -133,7 +137,6 @@ export default function GapAnalyzerClient() {
 
   return (
     <>
-      <Navbar />
 
       <main id="main-content" className="min-h-screen flex flex-col items-center justify-start bg-surface text-on-surface p-4 md:p-8 pt-24 text-start" tabIndex={-1}>
         <div className="w-full max-w-[64rem]">
@@ -309,6 +312,48 @@ export default function GapAnalyzerClient() {
                   </div>
                 )}
 
+                {/* STAR Method Feedback */}
+                {analysis.starMethodFeedback && (
+                  <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-outline-variant/50">
+                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
+                      <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-headline-sm font-bold text-on-surface">{t("gapAnalyzer.starMethod")}</h3>
+                    </div>
+                    <div className="bg-surface p-5 rounded-2xl border border-outline-variant/30 text-on-surface-variant leading-relaxed">
+                      {analysis.starMethodFeedback}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ideal Answers */}
+                {analysis.idealAnswers && analysis.idealAnswers.length > 0 && (
+                  <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-outline-variant/50">
+                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
+                      <div className="p-3 bg-success/10 rounded-xl text-success">
+                        <CheckCircle2 className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-headline-sm font-bold text-on-surface">{t("gapAnalyzer.idealAnswers")}</h3>
+                    </div>
+                    <div className="space-y-6">
+                      {analysis.idealAnswers.map((item, index) => (
+                        <div key={index} className="bg-surface-variant p-5 rounded-2xl border border-outline-variant/30 hover:border-success/50 transition-colors flex flex-col gap-3">
+                          <p className="font-bold text-lg text-primary">{t("gapAnalyzer.question")} <span className="text-on-surface font-normal">{item.question}</span></p>
+                          <div className="bg-surface p-4 rounded-xl border border-outline-variant/20">
+                            <p className="text-sm font-bold text-error mb-1">{t("gapAnalyzer.yourAnswer")}</p>
+                            <p className="text-on-surface-variant">{item.userAnswerSummary}</p>
+                          </div>
+                          <div className="bg-success/5 p-4 rounded-xl border border-success/20">
+                            <p className="text-sm font-bold text-success mb-1">{t("gapAnalyzer.ideal")}</p>
+                            <p className="text-on-surface leading-relaxed">{item.idealAnswer}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Recommended Topics */}
                 <div className="glass-card p-8 rounded-3xl shadow-sm border border-outline-variant/50">
                   <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
@@ -332,7 +377,6 @@ export default function GapAnalyzerClient() {
         </div>
       </main>
 
-      <Footer />
     </>
   );
 }

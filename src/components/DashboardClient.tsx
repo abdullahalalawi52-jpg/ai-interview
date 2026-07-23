@@ -8,11 +8,11 @@ import { useAuth } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
 
 const SettingsModal = dynamic(() => import("@/components/SettingsModal"), { ssr: false });
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { useLanguage } from "@/context/LanguageContext";
 import { useActivities } from "@/hooks/useActivities";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { motion } from "framer-motion";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
 /**
  * DashboardClient Component
@@ -48,7 +48,6 @@ export default function DashboardClient() {
   if (loading || !user) {
     return (
       <div className="flex flex-col flex-1 bg-surface min-h-screen">
-        <Navbar />
         <main className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full">
           <div className="mb-8 flex justify-between items-end">
             <div>
@@ -65,7 +64,6 @@ export default function DashboardClient() {
           <Skeleton className="h-8 w-40 mb-6" />
           <Skeleton className="h-64 rounded-3xl mb-12" />
         </main>
-        <Footer />
       </div>
     );
   }
@@ -73,7 +71,6 @@ export default function DashboardClient() {
   if (!activities) return null;
   return (
     <div className="flex flex-col flex-1 bg-surface text-on-surface min-h-screen">
-      <Navbar />
 
       {/* Main Content */}
       <main id="main-content" className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full" tabIndex={-1}>
@@ -93,9 +90,9 @@ export default function DashboardClient() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
-            { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? <Skeleton className="h-8 w-12" /> : activities.length.toString() },
-            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? <Skeleton className="h-8 w-16" /> : (avgScore !== null ? avgScore + "%" : t("dashboard.stats.none")) },
-            { icon: <Clock className="text-secondary w-6 h-6" />, label: t("dashboard.stats.estTime"), value: isFetching ? <Skeleton className="h-8 w-20" /> : (activities.filter(a => a.type === 'interview').length * 15 + activities.filter(a => a.type === 'quiz').length * 5) + " " + t("dashboard.stats.minutes") }
+            { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? <Skeleton className="h-8 w-12" /> : <AnimatedCounter value={activities.length} /> },
+            { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? <Skeleton className="h-8 w-16" /> : (avgScore !== null ? <span className="flex items-center"><AnimatedCounter value={avgScore} />%</span> : t("dashboard.stats.none")) },
+            { icon: <Clock className="text-secondary w-6 h-6" />, label: t("dashboard.stats.estTime"), value: isFetching ? <Skeleton className="h-8 w-20" /> : <span className="flex items-center gap-1"><AnimatedCounter value={activities.filter(a => a.type === 'interview').length * 15 + activities.filter(a => a.type === 'quiz').length * 5} /> {t("dashboard.stats.minutes")}</span> }
           ].map((stat, i) => (
             <div key={i} className="glass-card rounded-2xl p-6 flex items-center gap-4 shadow-sm border border-transparent hover:border-outline-variant/30 transition-colors">
               <div className="p-3 bg-primary/10 rounded-xl">
@@ -133,9 +130,22 @@ export default function DashboardClient() {
                   <th className="p-4 font-bold text-on-surface-variant text-center">{t("dashboard.history.action")}</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: { transition: { staggerChildren: 0.1 } }
+                }}
+              >
                 {activities.map((activity) => (
-                  <tr key={activity.id} className="border-b border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
+                  <motion.tr 
+                    key={activity.id} 
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                    }}
+                    className="border-b border-outline-variant/20 hover:bg-surface-variant/30 transition-colors"
+                  >
                     <td className="p-4 text-start">{activity.createdAt?.toDate ? new Date(activity.createdAt.toDate()).toLocaleDateString() : t("dashboard.history.notAvailable")}</td>
                     <td className="p-4 text-start">
                       <div className="font-bold flex items-center gap-2">
@@ -170,9 +180,9 @@ export default function DashboardClient() {
                           </span>
                       )}
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>
@@ -180,7 +190,7 @@ export default function DashboardClient() {
         {/* Actions */}
         <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">{t("dashboard.actions.title")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
-          <Link href="/interview" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-primary/30 transition-all hover:shadow-lg relative overflow-hidden">
+          <Link href="/interview" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-primary/50 transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(99,102,241,0.2)] relative overflow-hidden">
             <div className="w-14 h-14 bg-primary text-on-primary rounded-2xl flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-transform">
               <Mic className="w-7 h-7" />
             </div>
@@ -191,7 +201,7 @@ export default function DashboardClient() {
             </div>
           </Link>
 
-          <Link href="/gap-analyzer" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-secondary/30 transition-all hover:shadow-lg relative overflow-hidden">
+          <Link href="/gap-analyzer" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-secondary/50 transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(20,184,166,0.2)] relative overflow-hidden">
             <div className="w-14 h-14 bg-secondary text-on-secondary rounded-2xl flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-transform">
               <FileText className="w-7 h-7" />
             </div>
@@ -202,7 +212,7 @@ export default function DashboardClient() {
             </div>
           </Link>
 
-          <Link href="/quiz" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-tertiary/30 transition-all hover:shadow-lg relative overflow-hidden">
+          <Link href="/quiz" className="glass-card group flex flex-col items-start p-8 rounded-3xl border-2 border-transparent hover:border-tertiary/50 transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(244,63,94,0.2)] relative overflow-hidden">
             <div className="w-14 h-14 bg-tertiary text-on-primary rounded-2xl flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-transform">
               <ListChecks className="w-7 h-7" />
             </div>
@@ -215,7 +225,6 @@ export default function DashboardClient() {
         </div>
       </main>
 
-      <Footer />
 
       <SettingsModal 
         isOpen={isSettingsOpen} 

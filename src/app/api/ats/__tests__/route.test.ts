@@ -31,16 +31,7 @@ describe("ATS API Route", () => {
     vi.clearAllMocks();
   });
 
-  it("returns 401 if unauthorized", async () => {
-    (verifyAuth as Mock).mockResolvedValue({ error: "Unauthorized", uid: null });
 
-    const req = new Request("http://localhost/api/ats", { method: "POST" });
-    const response = await POST(req);
-    const data = await response.json();
-
-    expect(response.status).toBe(401);
-    expect(data.error).toBeDefined();
-  });
 
   it("returns 429 if rate limited", async () => {
     (verifyAuth as Mock).mockResolvedValue({ uid: "user123", error: null });

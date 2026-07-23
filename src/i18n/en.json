@@ -6,6 +6,7 @@
     "atsScanner": "ATS Scanner",
     "gapAnalyzer": "Interview Report",
     "quiz": "Quizzes",
+    "linkedinOptimizer": "LinkedIn Optimizer",
     "login": "Log In",
     "logout": "Log Out",
     "startInterview": "Start Interview"
@@ -255,6 +256,11 @@
       "aiNote": "AI Note:"
     },
     "topics": "Recommended Topics to Study",
+    "starMethod": "STAR Method Evaluation",
+    "idealAnswers": "Ideal Answers & Corrections",
+    "question": "Question:",
+    "yourAnswer": "Your Answer Summary:",
+    "ideal": "Ideal Answer:",
     "noData": "No data to display"
   },
   "profile": {
@@ -390,6 +396,27 @@
     "strengths": "Strengths & Matches",
     "missingKeywords": "Missing Keywords",
     "tips": "How to improve your resume?"
+  },
+  "linkedinOptimizer": {
+    "title": "LinkedIn Profile Optimizer",
+    "subtitle": "Use AI to transform your resume into a professional and attractive LinkedIn profile. It will generate a professional headline, an 'About' section, and experience tips.",
+    "step1": "1. Upload Resume (PDF)",
+    "clickToUpload": "Click to upload",
+    "orDrag": "or drag file here",
+    "maxSize": "PDF (Max 5MB)",
+    "errorPdfOnly": "Please upload a PDF file only.",
+    "errorMissing": "Please upload a resume.",
+    "analyzing": "Analyzing Resume...",
+    "scanBtn": "Optimize Profile Now",
+    "resultsPlaceholderTitle": "Optimization results will appear here",
+    "resultsPlaceholderDesc": "Upload your resume to begin",
+    "aiReading": "AI is writing your profile...",
+    "headline": "Professional Headline",
+    "about": "About Section",
+    "keywords": "Recommended Keywords",
+    "experienceTips": "Experience Section Tips",
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "testPlural": {
     "zero": "No interviews",

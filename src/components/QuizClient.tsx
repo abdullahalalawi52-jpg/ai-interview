@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -36,7 +33,7 @@ export default function QuizClient() {
   const [gameState, setGameState] = useState<"start" | "config" | "generating" | "playing" | "result">("start");
   const { t, language } = useLanguage();
   const { user } = useAuth();
-  const router = useRouter();
+
   
   // Customization state
   const [companyName, setCompanyName] = useState("");
@@ -151,7 +148,6 @@ export default function QuizClient() {
 
   return (
     <div className="flex flex-col flex-1 bg-surface text-on-surface min-h-screen">
-      <Navbar />
 
       <main id="main-content" className="flex-1 flex flex-col items-center justify-center p-6 max-w-container-max mx-auto w-full py-12" tabIndex={-1}>
         
@@ -221,7 +217,6 @@ export default function QuizClient() {
         )}
       </main>
 
-      <Footer />
     </div>
   );
 }

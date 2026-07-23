@@ -24,7 +24,7 @@ export default function QuizConfig({
   onBack,
   onGenerate
 }: QuizConfigProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="glass-card w-full max-w-[42rem] p-8 md:p-12 rounded-[32px] border border-white/10 shadow-2xl slide-up text-start bg-surface/80 backdrop-blur-xl">

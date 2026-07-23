@@ -1,5 +1,5 @@
 import GapAnalyzerClient from "@/components/GapAnalyzerClient";
-import type { Metadata } from "next";
+
 import { Suspense } from "react";
 
 import { getI18nMetadata } from "@/lib/metadata";

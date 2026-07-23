@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "ai";
 import { google, DEFAULT_MODEL } from "@/lib/ai";
+import { Buffer } from "buffer";
 
 export async function POST(req: NextRequest) {
   try {

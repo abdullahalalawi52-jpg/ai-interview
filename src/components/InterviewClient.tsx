@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, FormEvent, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -24,7 +24,7 @@ import InterviewChat from "@/components/interview/InterviewChat";
 export default function InterviewClient() {
   const { user, loading } = useAuth();
   const { t, language } = useLanguage();
-  const router = useRouter();
+
 
   const [setupComplete, setSetupComplete] = useState(false);
   const [interviewConfig, setInterviewConfig] = useState<InterviewConfig>({
@@ -83,7 +83,7 @@ export default function InterviewClient() {
   useEffect(() => {
     if (hasStarted && !isFinished) {
       timerRef.current = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
+        setElapsedTime((prev: number) => prev + 1);
       }, 1000);
     } else if (timerRef.current) {
       clearInterval(timerRef.current);

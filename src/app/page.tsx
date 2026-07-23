@@ -1,5 +1,5 @@
 import HomeClient from "@/components/HomeClient";
-import type { Metadata } from "next";
+
 
 import { getI18nMetadata } from "@/lib/metadata";
 

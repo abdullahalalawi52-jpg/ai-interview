@@ -1,10 +1,7 @@
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 export default function TermsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-24">
         <h1 className="font-headline-xl text-headline-xl text-on-surface mb-8">شروط الاستخدام</h1>
         <div className="prose prose-lg dark:prose-invert text-on-surface-variant space-y-6">
@@ -29,7 +26,6 @@ export default function TermsPage() {
           </p>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

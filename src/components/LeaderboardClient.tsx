@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Trophy, Medal, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage, TranslationKey } from "@/context/LanguageContext";
@@ -74,7 +72,6 @@ export default function LeaderboardClient() {
 
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <Navbar />
       
       <main id="main-content" className="flex-1 max-w-4xl mx-auto w-full px-4 py-12" tabIndex={-1}>
         <div className="text-center mb-12">
@@ -111,7 +108,14 @@ export default function LeaderboardClient() {
               <p className="font-body-md text-body-md text-on-surface-variant max-w-[24rem] mb-6">{t("leaderboard.emptyDesc")}</p>
             </div>
           ) : (
-            <div className="relative z-10 flex flex-col gap-3">
+            <motion.div 
+              className="relative z-10 flex flex-col gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { transition: { staggerChildren: 0.1 } }
+              }}
+            >
               {/* Table Header */}
               <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-outline-variant/30 text-on-surface-variant text-sm font-bold">
                 <div className="col-span-2 sm:col-span-1 text-center">{t("leaderboard.table.rank")}</div>
@@ -123,9 +127,10 @@ export default function LeaderboardClient() {
               {/* Leaderboard Rows */}
               {topUsers.map((user, index) => (
                 <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+                  }}
                   key={user.id} 
                   className={`grid grid-cols-12 gap-4 items-center px-6 py-4 rounded-2xl transition-colors ${index === 0 ? 'bg-tertiary/10 border border-tertiary/20 shadow-sm' : index === 1 ? 'bg-surface-variant/50 border border-outline-variant/20' : index === 2 ? 'bg-surface-container/50 border border-outline-variant/20' : 'hover:bg-surface-variant/30'}`}
                 >
@@ -160,7 +165,7 @@ export default function LeaderboardClient() {
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
         
@@ -171,7 +176,6 @@ export default function LeaderboardClient() {
         </div>
       </main>
       
-      <Footer />
     </div>
   );
 }

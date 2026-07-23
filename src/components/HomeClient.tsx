@@ -1,18 +1,36 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { ArrowLeft, Mic, Activity, Sparkles, BrainCircuit } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomeClient() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  const phrases = language === "ar" ? [
+    "تدرب في بيئة آمنة خالية من التوتر 🎯",
+    "اكتشف الفجوات في سيرتك الذاتية 📄",
+    "احصل على تقييم فوري ومفصل لأدائك ⚡",
+    "تجاوز رهبة المقابلات بثقة تامة 🚀"
+  ] : [
+    "Practice in a safe, stress-free environment 🎯",
+    "Discover gaps in your resume 📄",
+    "Get instant, detailed feedback on your performance ⚡",
+    "Overcome interview anxiety with full confidence 🚀"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % phrases.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [phrases.length]);
 
   return (
     <>
-      <Navbar />
 
       <main id="main-content" className="hero-gradient" tabIndex={-1}>
         {/* Hero Section */}
@@ -29,6 +47,22 @@ export default function HomeClient() {
                 <Link href="/gap-analyzer" className="px-xl py-md border-2 border-outline text-on-surface rounded-xl font-bold transition-all hover:bg-on-surface/5 active:scale-95 hover:border-on-surface">
                   {t("home.analyzeBtn")}
                 </Link>
+              </div>
+              
+              <div className="mt-4 h-8 relative overflow-hidden flex items-center w-full max-w-[36rem]">
+                <AnimatePresence>
+                  <motion.div
+                    key={phraseIndex}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className="text-on-surface-variant font-bold text-sm flex items-center gap-2 absolute w-full"
+                  >
+                    <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                    <p className="m-0">{phrases[phraseIndex]}</p>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
             <div className="relative hidden lg:block min-w-0 w-full">
@@ -92,7 +126,13 @@ export default function HomeClient() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
               {/* Voice Interview Card */}
-              <div className="glass-card rounded-3xl overflow-hidden flex flex-col transition-all hover:-translate-y-2 hover:shadow-xl group border-transparent hover:border-primary/20 border-2">
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="glass-card rounded-3xl overflow-hidden flex flex-col transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(99,102,241,0.2)] group border-transparent hover:border-primary/50 border-2"
+              >
                 <div className="w-full h-48 bg-gradient-to-br from-primary/5 to-primary/10 relative flex items-center justify-center overflow-hidden">
                   <div className="relative z-10 w-24 h-24 bg-white dark:bg-surface rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-500 border border-outline-variant/20">
                     <Mic className="w-10 h-10 text-primary relative z-20" />
@@ -115,10 +155,16 @@ export default function HomeClient() {
                   <h3 className="font-headline-md text-headline-md text-primary m-0">{t("home.f1Title")}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed m-0">{t("home.f1Desc")}</p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Performance Reports Card */}
-              <div className="glass-card rounded-3xl overflow-hidden flex flex-col transition-all hover:-translate-y-2 hover:shadow-xl group border-transparent hover:border-tertiary/20 border-2">
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+                className="glass-card rounded-3xl overflow-hidden flex flex-col transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(244,63,94,0.2)] group border-transparent hover:border-tertiary/50 border-2"
+              >
                 <div className="w-full h-48 bg-gradient-to-br from-tertiary/5 to-tertiary/10 relative flex items-center justify-center overflow-hidden">
                   <div className="relative z-10 w-36 h-24 bg-white dark:bg-surface rounded-xl shadow-lg flex items-end justify-between p-4 transform group-hover:scale-105 transition-transform duration-500 border border-outline-variant/20">
                     <motion.div className="w-4 bg-error/70 rounded-t-md" animate={{ height: ["30%", "60%", "30%"] }} transition={{ duration: 2, repeat: 2 }} />
@@ -135,10 +181,16 @@ export default function HomeClient() {
                   <h3 className="font-headline-md text-headline-md text-primary m-0">{t("home.f3Title")}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed m-0">{t("home.f3Desc")}</p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* CV Analysis Bento Card */}
-              <div className="lg:col-span-2 glass-card rounded-3xl grid grid-cols-1 md:grid-cols-5 overflow-hidden transition-all hover:-translate-y-2 hover:shadow-xl group border-transparent hover:border-secondary/20 border-2">
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+                className="lg:col-span-2 glass-card rounded-3xl grid grid-cols-1 md:grid-cols-5 overflow-hidden transition-all hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12),0_0_20px_rgba(20,184,166,0.2)] group border-transparent hover:border-secondary/50 border-2"
+              >
                 {/* Illustration Area */}
                 <div className="w-full md:col-span-2 min-h-[300px] relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-cyan-100/80 to-blue-50/50 dark:from-cyan-900/30 dark:to-blue-900/20 p-8">
                   <div className="relative w-48 h-64 bg-white dark:bg-surface rounded-xl shadow-2xl p-5 flex flex-col gap-4 transform group-hover:scale-105 transition-transform duration-500 z-10 border border-outline-variant/10">
@@ -196,7 +248,7 @@ export default function HomeClient() {
                     </Link>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -220,7 +272,6 @@ export default function HomeClient() {
         </section>
       </main>
 
-      <Footer />
     </>
   );
 }
