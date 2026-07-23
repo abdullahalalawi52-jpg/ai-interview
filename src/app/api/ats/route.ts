@@ -25,10 +25,10 @@ import { ratelimit } from "@/lib/ratelimit";
  */
 export async function POST(req: Request) {
   try {
-    // 1. Authentication
+    // 1. Authentication (Optional to allow guests)
     const { uid, error: authError } = await verifyAuth(req);
     if (authError) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول (Unauthorized)" }, { status: 401 });
+      console.warn("Auth Failed or Guest user in ATS, proceeding as guest.");
     }
 
     // 2. Rate Limiting
