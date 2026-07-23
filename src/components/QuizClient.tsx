@@ -79,9 +79,9 @@ export default function QuizClient() {
 
   const handleStart = async () => {
     if (!user) {
-      toast.error(language === 'ar' ? "يجب عليك تسجيل الدخول أولاً لإنشاء اختبار" : "You must log in first to create a quiz");
-      router.push('/login');
-      return;
+      toast(language === 'ar' ? "أنت تستخدم المنصة كزائر. سيتم فقدان نتيجتك بعد الانتهاء." : "You are using the platform as a guest. Your score will not be saved.", {
+        icon: 'ℹ️',
+      });
     }
 
     if (!companyName.trim() || !jobTitle.trim()) {

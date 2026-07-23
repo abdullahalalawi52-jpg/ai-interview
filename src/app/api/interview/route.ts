@@ -54,15 +54,11 @@ export async function POST(req: Request) {
   try {
     console.log(">>> [POST /api/interview] Request received");
     console.log(">>> API KEY EXISTS:", !!process.env.GOOGLE_GENERATIVE_AI_API_KEY);
-    // 1. Authentication
+    // 1. Authentication (Optional for Interview to allow guests)
     const { uid, error: authError } = await verifyAuth(req);
     
     if (authError) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn("Auth Failed (likely missing FIREBASE_PRIVATE_KEY), but bypassing for local development.");
-      } else {
-        return new Response(JSON.stringify({ error: "غير مصرح لك بالوصول (Unauthorized)" }), { status: 401 });
-      }
+      console.warn("Auth Failed or Guest user, proceeding as guest.");
     }
 
     // 2. Rate Limiting

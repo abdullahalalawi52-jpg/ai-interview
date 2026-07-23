@@ -116,9 +116,9 @@ export default function InterviewClient() {
 
   const startInterview = () => {
     if (!user) {
-      toast.error(language === 'ar' ? "يجب عليك تسجيل الدخول أولاً للبدء" : "You must log in first to start");
-      router.push('/login');
-      return;
+      toast(language === 'ar' ? "أنت تستخدم المنصة كزائر. سيتم حفظ المقابلة محلياً فقط." : "You are using the platform as a guest. The interview will be saved locally.", {
+        icon: 'ℹ️',
+      });
     }
     setHasStarted(true);
     const startMsg = t("interview.startMessage").replace("{{company}}", interviewConfig.company || "the selected company");
