@@ -7,40 +7,51 @@ const cairo = Cairo({
   variable: "--font-cairo",
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | AI Interview Prep",
-    default: "AI Interview Prep | تحضير المقابلة الذكية",
-  },
-  description: "تدرب على مقابلات العمل بتقنية الذكاء الاصطناعي مع تقييم فوري وتحليل للسيرة الذاتية واختبارات تقنية مخصصة.",
-  keywords: ["AI", "Interview", "Preparation", "Resume Analysis", "ATS", "ذكاء اصطناعي", "مقابلات شخصية", "سيرة ذاتية", "توظيف"],
-  openGraph: {
-    title: "تحضير المقابلة الذكية | AI Interview Prep",
-    description: "تجاوز رهبة المقابلات مع تجربة واقعية تحاكي كبرى الشركات. احصل على تقييم فوري ونقاط ضعفك.",
-    url: "https://ai-interview-prep.vercel.app",
-    siteName: "AI Interview Prep",
-    locale: "ar_SA",
-    type: "website",
-    images: [
-      {
-        url: "https://ai-interview-prep.vercel.app/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "AI Interview Prep",
-      }
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "تحضير المقابلة الذكية | AI Interview Prep",
-    description: "تدرب على المقابلات الشخصية بالذكاء الاصطناعي",
-    images: ["https://ai-interview-prep.vercel.app/og-image.png"],
-  }
-};
+import { getI18nMetadata } from "@/lib/metadata";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const baseMeta = await getI18nMetadata(
+    "AI Interview Prep | تحضير المقابلة الذكية",
+    "AI Interview Prep",
+    "تدرب على مقابلات العمل بتقنية الذكاء الاصطناعي مع تقييم فوري وتحليل للسيرة الذاتية واختبارات تقنية مخصصة.",
+    "Practice job interviews using AI with instant feedback, resume analysis, and customized technical quizzes."
+  );
+
+  return {
+    title: {
+      template: typeof baseMeta.title === "string" ? `%s | ${baseMeta.title}` : "%s | AI Interview Prep",
+      default: baseMeta.title as string,
+    },
+    description: baseMeta.description,
+    keywords: ["AI", "Interview", "Preparation", "Resume Analysis", "ATS", "ذكاء اصطناعي", "مقابلات شخصية", "سيرة ذاتية", "توظيف"],
+    openGraph: {
+      title: baseMeta.title as string,
+      description: baseMeta.description as string,
+      url: "https://ai-interview-prep.vercel.app",
+      siteName: "AI Interview Prep",
+      locale: "ar_SA",
+      type: "website",
+      images: [
+        {
+          url: "https://ai-interview-prep.vercel.app/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "AI Interview Prep",
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: baseMeta.title as string,
+      description: baseMeta.description as string,
+      images: ["https://ai-interview-prep.vercel.app/og-image.png"],
+    }
+  };
+}
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider, Language } from "@/context/LanguageContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import SkipLink from "@/components/SkipLink";
 import { cookies } from "next/headers";
 
 import { Toaster } from "react-hot-toast";
@@ -108,14 +119,9 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-surface text-on-surface font-body-lg flex flex-col transition-colors duration-300">
-        <a 
-          href="#main-content" 
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded-lg focus:shadow-lg focus:outline-none"
-        >
-          {initialLang === "ar" ? "الانتقال إلى المحتوى الأساسي" : "Skip to main content"}
-        </a>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <LanguageProvider initialLanguage={initialLang}>
+            <SkipLink />
             <AuthProvider>
               {children}
               <Toaster position="bottom-center" />

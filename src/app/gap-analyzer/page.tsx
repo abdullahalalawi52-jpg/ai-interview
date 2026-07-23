@@ -2,10 +2,16 @@ import GapAnalyzerClient from "@/components/GapAnalyzerClient";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-export const metadata: Metadata = {
-  title: "تقرير الأداء | تحضير المقابلة الذكية",
-  description: "تحليل أدائك في المقابلة ومعرفة نقاط القوة ومجالات التحسين.",
-};
+import { getI18nMetadata } from "@/lib/metadata";
+
+export async function generateMetadata() {
+  return getI18nMetadata(
+    "تقرير الأداء",
+    "Performance Report",
+    "تحليل أدائك في المقابلة ومعرفة نقاط القوة ومجالات التحسين.",
+    "Analyze your interview performance and discover strengths and areas for improvement."
+  );
+}
 
 export default function GapAnalyzerPage() {
   return (

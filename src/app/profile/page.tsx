@@ -1,9 +1,15 @@
 import ProfileClient from "@/components/ProfileClient";
 
-export const metadata = {
-  title: 'الملف الشخصي | تحضير المقابلة الذكية',
-  description: 'إدارة ملفك الشخصي وإحصائيات المقابلات',
-};
+import { getI18nMetadata } from "@/lib/metadata";
+
+export async function generateMetadata() {
+  return getI18nMetadata(
+    "الملف الشخصي",
+    "Profile",
+    "إدارة ملفك الشخصي وإحصائيات المقابلات",
+    "Manage your profile and interview statistics"
+  );
+}
 
 export default function ProfilePage() {
   return <ProfileClient />;

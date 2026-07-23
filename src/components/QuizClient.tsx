@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -35,6 +36,7 @@ export default function QuizClient() {
   const [gameState, setGameState] = useState<"start" | "config" | "generating" | "playing" | "result">("start");
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const router = useRouter();
   
   // Customization state
   const [companyName, setCompanyName] = useState("");
@@ -76,6 +78,12 @@ export default function QuizClient() {
   };
 
   const handleStart = async () => {
+    if (!user) {
+      toast.error(language === 'ar' ? "يجب عليك تسجيل الدخول أولاً لإنشاء اختبار" : "You must log in first to create a quiz");
+      router.push('/login');
+      return;
+    }
+
     if (!companyName.trim() || !jobTitle.trim()) {
       toast.error(t("quiz.alerts.fillAll"));
       return;

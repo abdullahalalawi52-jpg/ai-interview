@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, FormEvent, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -23,6 +24,7 @@ import InterviewChat from "@/components/interview/InterviewChat";
 export default function InterviewClient() {
   const { user, loading } = useAuth();
   const { t, language } = useLanguage();
+  const router = useRouter();
 
   const [setupComplete, setSetupComplete] = useState(false);
   const [interviewConfig, setInterviewConfig] = useState<InterviewConfig>({
@@ -113,6 +115,11 @@ export default function InterviewClient() {
   useTextToSpeech(messages, isLoading, language);
 
   const startInterview = () => {
+    if (!user) {
+      toast.error(language === 'ar' ? "يجب عليك تسجيل الدخول أولاً للبدء" : "You must log in first to start");
+      router.push('/login');
+      return;
+    }
     setHasStarted(true);
     const startMsg = t("interview.startMessage").replace("{{company}}", interviewConfig.company || "the selected company");
     sendMessage({ text: startMsg });

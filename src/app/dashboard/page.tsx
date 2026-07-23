@@ -1,10 +1,14 @@
 import DashboardClient from "@/components/DashboardClient";
-import type { Metadata } from "next";
+import { getI18nMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "لوحة التحكم | تحضير المقابلة الذكية",
-  description: "لوحة التحكم ومتابعة الأداء",
-};
+export async function generateMetadata() {
+  return getI18nMetadata(
+    "لوحة التحكم",
+    "Dashboard",
+    "لوحة التحكم ومتابعة الأداء",
+    "Dashboard and performance tracking"
+  );
+}
 
 export default function Dashboard() {
   return <DashboardClient />;
