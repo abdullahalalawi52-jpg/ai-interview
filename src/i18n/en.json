@@ -16,7 +16,9 @@
     "default": "An unexpected error occurred. Please try again.",
     "network": "Failed to connect to the server. Check your internet connection.",
     "auth": "Invalid session. Please log in again.",
-    "fetchFailed": "Failed to fetch data."
+    "fetchFailed": "Failed to fetch data.",
+    "notFound": "Page not found.",
+    "notFoundDesc": "The page you are looking for does not exist or has been moved."
   },
   "home": {
     "badge": "Powered by AI GPT-4",
