@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 
 export default function Error({
@@ -10,8 +10,15 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [lang, setLang] = useState<"ar" | "en">("ar");
+
   useEffect(() => {
     console.error(error);
+    const storedLang = localStorage.getItem("language");
+    if (storedLang === "en") {
+      // eslint-disable-next-line
+      setLang("en");
+    }
   }, [error]);
 
   return (
@@ -20,19 +27,17 @@ export default function Error({
         <AlertTriangle className="w-10 h-10 text-error" />
       </div>
       <h2 className="text-2xl font-bold mb-4">
-        عذراً، حدث خطأ غير متوقع / Something went wrong
+        {lang === "ar" ? "عذراً، حدث خطأ غير متوقع" : "Something went wrong"}
       </h2>
       <p className="text-on-surface-variant max-w-md mb-8">
-        نعتذر عن هذا الخلل. يرجى المحاولة مرة أخرى.
-        <br />
-        We apologize for the inconvenience. Please try again.
+        {lang === "ar" ? "نعتذر عن هذا الخلل. يرجى المحاولة مرة أخرى." : "We apologize for the inconvenience. Please try again."}
       </p>
       <button
         onClick={() => reset()}
         className="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary/90 transition-colors"
       >
         <RotateCcw className="w-5 h-5" />
-        المحاولة مرة أخرى / Try Again
+        {lang === "ar" ? "المحاولة مرة أخرى" : "Try Again"}
       </button>
     </div>
   );

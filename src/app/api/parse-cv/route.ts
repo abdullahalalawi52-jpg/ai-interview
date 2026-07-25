@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ text });
   } catch (error) {
-    console.error("Error parsing CV:", error);
+    console.error("Error parsing CV:", error instanceof Error ? error.message : "Unknown error");
     return NextResponse.json({ error: "Failed to parse CV: " + (error instanceof Error ? error.message : String(error)) }, { status: 500 });
   }
 }

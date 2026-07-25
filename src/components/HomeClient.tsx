@@ -5,10 +5,26 @@ import Link from "next/link";
 import { ArrowLeft, Mic, Activity, Sparkles, BrainCircuit } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { Suspense } from "react";
 
-export default function HomeClient() {
+function HomeContent() {
   const { language, t } = useLanguage();
   const [phraseIndex, setPhraseIndex] = useState(0);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { openAuthModal } = useAuth();
+
+  useEffect(() => {
+    if (searchParams?.get("login") === "true") {
+      openAuthModal();
+      // Remove the query parameter so it doesn't trigger again on refresh
+      router.replace(pathname, { scroll: false });
+    }
+  }, [searchParams, openAuthModal, router, pathname]);
 
   const phrases = language === "ar" ? [
     "تدرب في بيئة آمنة خالية من التوتر 🎯",
@@ -90,7 +106,7 @@ export default function HomeClient() {
                   {/* AI Center Orb */}
                   <motion.div
                     animate={{ scale: [1, 1.05, 1], boxShadow: ["0px 0px 0px 0px rgba(99, 102, 241, 0)", "0px 0px 40px 10px rgba(99, 102, 241, 0.4)", "0px 0px 0px 0px rgba(99, 102, 241, 0)"] }}
-                    transition={{ duration: 3, repeat: 2, ease: "easeInOut" }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     className="relative z-10 w-24 h-24 bg-gradient-to-tr from-indigo-500 to-cyan-400 rounded-full flex items-center justify-center shadow-lg"
                   >
                     <BrainCircuit className="w-12 h-12 text-white" />
@@ -102,7 +118,7 @@ export default function HomeClient() {
                       <motion.div
                         key={i}
                         animate={{ height: ["20%", "100%", "30%", "80%", "20%"] }}
-                        transition={{ duration: 1.5 + (i % 4) * 0.3, repeat: 3, ease: "easeInOut", delay: (i % 5) * 0.1 }}
+                        transition={{ duration: 1.5 + (i % 4) * 0.3, repeat: Infinity, ease: "easeInOut", delay: (i % 5) * 0.1 }}
                         className="w-1.5 bg-cyan-400 rounded-t-full opacity-80"
                       />
                     ))}
@@ -111,7 +127,7 @@ export default function HomeClient() {
                   {/* Floating cards */}
                   <motion.div
                     animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }}
-                    transition={{ duration: 5, repeat: 2, ease: "easeInOut" }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute top-6 right-8 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-2 z-10"
                   >
                     <Sparkles className="w-5 h-5 text-yellow-400" />
@@ -120,7 +136,7 @@ export default function HomeClient() {
 
                   <motion.div
                     animate={{ y: [10, -10, 10], rotate: [2, -2, 2] }}
-                    transition={{ duration: 6, repeat: 2, ease: "easeInOut" }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute bottom-16 left-8 bg-white/10 backdrop-blur-md border border-white/20 p-3 rounded-xl flex items-center gap-2 z-10"
                   >
                     <Activity className="w-5 h-5 text-green-400" />
@@ -160,7 +176,7 @@ export default function HomeClient() {
                         key={i}
                         className="flex-1 bg-primary rounded-t-sm"
                         animate={{ height: ["10%", "80%", "30%", "60%", "10%"] }}
-                        transition={{ duration: 1.5, repeat: 3, delay: i * 0.1, ease: "easeInOut" }}
+                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1, ease: "easeInOut" }}
                       />
                     ))}
                   </div>
@@ -182,10 +198,10 @@ export default function HomeClient() {
               >
                 <div className="w-full h-48 bg-gradient-to-br from-tertiary/5 to-tertiary/10 relative flex items-center justify-center overflow-hidden">
                   <div className="relative z-10 w-36 h-24 bg-white dark:bg-surface rounded-xl shadow-lg flex items-end justify-between p-4 transform group-hover:scale-105 transition-transform duration-500 border border-outline-variant/20">
-                    <motion.div className="w-4 bg-error/70 rounded-t-md" animate={{ height: ["30%", "60%", "30%"] }} transition={{ duration: 2, repeat: 2 }} />
-                    <motion.div className="w-4 bg-tertiary-fixed-dim/60 rounded-t-md" animate={{ height: ["50%", "30%", "50%"] }} transition={{ duration: 2, repeat: 2, delay: 0.3 }} />
-                    <motion.div className="w-4 bg-tertiary/80 rounded-t-md" animate={{ height: ["70%", "90%", "70%"] }} transition={{ duration: 2, repeat: 2, delay: 0.6 }} />
-                    <motion.div className="w-4 bg-primary/80 rounded-t-md" animate={{ height: ["90%", "40%", "90%"] }} transition={{ duration: 2, repeat: 2, delay: 0.9 }} />
+                    <motion.div className="w-4 bg-error/70 rounded-t-md" animate={{ height: ["30%", "60%", "30%"] }} transition={{ duration: 2, repeat: Infinity }} />
+                    <motion.div className="w-4 bg-tertiary-fixed-dim/60 rounded-t-md" animate={{ height: ["50%", "30%", "50%"] }} transition={{ duration: 2, repeat: Infinity, delay: 0.3 }} />
+                    <motion.div className="w-4 bg-tertiary/80 rounded-t-md" animate={{ height: ["70%", "90%", "70%"] }} transition={{ duration: 2, repeat: Infinity, delay: 0.6 }} />
+                    <motion.div className="w-4 bg-primary/80 rounded-t-md" animate={{ height: ["90%", "40%", "90%"] }} transition={{ duration: 2, repeat: Infinity, delay: 0.9 }} />
                     <div className="absolute top-3 right-3 w-8 h-8 bg-tertiary/10 rounded-full flex items-center justify-center shadow-inner">
                       <div className="w-3 h-3 bg-tertiary rounded-full animate-pulse"></div>
                     </div>
@@ -245,7 +261,7 @@ export default function HomeClient() {
                     {/* Scan Line Animation */}
                     <motion.div 
                       animate={{ top: ["0%", "100%", "0%"] }}
-                      transition={{ duration: 3, repeat: 3, ease: "easeInOut" }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                       className="absolute left-[-10%] right-[-10%] h-1 bg-secondary shadow-[0_0_15px_rgba(0,106,97,0.8)] z-20"
                     />
                   </div>
@@ -288,5 +304,13 @@ export default function HomeClient() {
       </main>
 
     </>
+  );
+}
+
+export default function HomeClient() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }

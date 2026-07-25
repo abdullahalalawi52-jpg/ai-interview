@@ -38,14 +38,14 @@ interface SpeechRecognitionType extends EventTarget {
   lang: string;
   start: () => void;
   stop: () => void;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  onend: ((event: Event) => void) | null;
+  onresult: ((_event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((_event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: ((_event: Event) => void) | null;
 }
 
 export function useSpeechRecognition(
   language: string,
-  onTranscriptChange: (transcript: string) => void
+  onTranscriptChange: (_transcript: string) => void
 ) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionType | null>(null);

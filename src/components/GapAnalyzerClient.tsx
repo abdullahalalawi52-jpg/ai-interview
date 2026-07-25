@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
@@ -8,6 +8,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { AlertTriangle, MinusCircle, CheckCircle2, TrendingUp, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import ScoreRing from "./ScoreRing";
 
 interface AnalysisData {
   score: number;
@@ -40,12 +41,20 @@ export default function GapAnalyzerClient() {
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const languageRef = useRef(language);
+  const tRef = useRef(t);
+  
+  useEffect(() => {
+    languageRef.current = language;
+    tRef.current = t;
+  }, [language, t]);
+
   useEffect(() => {
     async function fetchAndAnalyze() {
 
       if (!interviewId) {
         setLoadingStep(null);
-        setError(t("gapAnalyzer.errors.noInterviewId"));
+        setError(tRef.current("gapAnalyzer.errors.noInterviewId"));
         return;
       }
 
@@ -56,14 +65,14 @@ export default function GapAnalyzerClient() {
         if (interviewId.startsWith("local_")) {
           const localDataStr = localStorage.getItem(`interview_${interviewId}`);
           if (!localDataStr) {
-            setError(t("gapAnalyzer.errors.notFoundLocal"));
+            setError(tRef.current("gapAnalyzer.errors.notFoundLocal"));
             setLoadingStep(null);
             return;
           }
           data = JSON.parse(localDataStr);
         } else {
           if (!user) {
-            setError(t("gapAnalyzer.errors.loginRequired"));
+            setError(tRef.current("gapAnalyzer.errors.loginRequired"));
             setLoadingStep(null);
             return;
           }
@@ -71,7 +80,7 @@ export default function GapAnalyzerClient() {
           const docSnap = await getDoc(docRef);
 
           if (!docSnap.exists()) {
-            setError(t("gapAnalyzer.errors.notFound"));
+            setError(tRef.current("gapAnalyzer.errors.notFound"));
             setLoadingStep(null);
             return;
           }
@@ -98,11 +107,11 @@ export default function GapAnalyzerClient() {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({ messages, duration: data.duration, language }),
+          body: JSON.stringify({ messages, duration: data.duration, language: languageRef.current }),
         });
 
         if (!res.ok) {
-          throw new Error(t("gapAnalyzer.errors.aiError"));
+          throw new Error(tRef.current("gapAnalyzer.errors.aiError"));
         }
 
         const analysisData = await res.json();
@@ -124,21 +133,21 @@ export default function GapAnalyzerClient() {
         console.error(err);
         const msg = err instanceof Error ? err.message : "";
         if (msg === "Failed to fetch" || msg.includes("fetch")) {
-          setError(t("errors.network"));
+          setError(tRef.current("errors.network"));
         } else {
-          setError(msg || t("gapAnalyzer.errors.unexpected"));
+          setError(msg || tRef.current("gapAnalyzer.errors.unexpected"));
         }
         setLoadingStep(null);
       }
     }
 
     fetchAndAnalyze();
-  }, [interviewId, user, t, language]);
+  }, [interviewId, user]);
 
   return (
     <>
 
-      <main id="main-content" className="min-h-screen flex flex-col items-center justify-start bg-surface text-on-surface p-4 md:p-8 pt-24 text-start" tabIndex={-1}>
+      <main id="main-content" className="min-h-screen flex flex-col items-center justify-start bg-surface text-on-surface p-4 md:p-8 pt-24 text-start focus:outline-none" tabIndex={-1}>
         <div className="w-full max-w-[64rem]">
           <div className="mb-12 text-center">
             <h1 className="font-headline-xl text-headline-xl text-primary mb-4 flex items-center justify-center gap-3">
@@ -211,23 +220,9 @@ export default function GapAnalyzerClient() {
               {/* Score and Overview */}
               <div className="lg:col-span-4 space-y-8">
                 <div className="glass-card p-8 rounded-3xl shadow-sm border-t-4 border-primary flex flex-col items-center text-center">
-                  <div className="relative w-40 h-40 mb-6">
-                    <svg className="w-full h-full transform -rotate-90">
-                      <circle className="text-surface-container-highest" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" strokeWidth="12"></circle>
-                      <circle 
-                        className={`transition-all duration-1000 ease-out ${analysis.score >= 80 ? 'text-green-500' : analysis.score >= 50 ? 'text-yellow-500' : 'text-error'}`} 
-                        cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" 
-                        strokeDasharray="439.8" 
-                        strokeDashoffset={439.8 - (439.8 * analysis.score) / 100} 
-                        strokeWidth="12"
-                      ></circle>
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="font-headline-xl text-headline-xl font-bold">{analysis.score}%</span>
-                    </div>
-                  </div>
-                  <h3 className="font-headline-md text-headline-md mb-2">{t("gapAnalyzer.score.title")}</h3>
-                  <p className="font-body-sm text-on-surface-variant">{t("gapAnalyzer.score.desc")}</p>
+                  <ScoreRing score={analysis.score} size="lg" />
+                  <h3 className="font-headline-md text-headline-md mb-2 mt-4">{t("gapAnalyzer.score.title")}</h3>
+                  <p className="font-body-sm text-on-surface-variant mb-4">{t("gapAnalyzer.score.desc")}</p>
                 </div>
 
                 <div className="bg-primary-container text-on-primary-container p-6 rounded-3xl shadow-md relative overflow-hidden group">

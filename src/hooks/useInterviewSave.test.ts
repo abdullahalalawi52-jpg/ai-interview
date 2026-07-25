@@ -31,21 +31,24 @@ vi.mock("@/lib/firebase", () => ({
 }));
 
 // Mock firestore functions
+const mockAddDoc = vi.fn().mockResolvedValue({ id: "mock_firestore_id" });
+const mockUpdateDoc = vi.fn().mockResolvedValue({});
 vi.mock("firebase/firestore/lite", () => ({
   collection: vi.fn(),
-  addDoc: vi.fn().mockResolvedValue({ id: "mock_firestore_id" }),
+  addDoc: (...args: any[]) => mockAddDoc(...args),
   serverTimestamp: vi.fn(),
   doc: vi.fn(),
-  updateDoc: vi.fn().mockResolvedValue({}),
+  updateDoc: (...args: any[]) => mockUpdateDoc(...args),
   increment: vi.fn()
 }));
 
 // Mock Auth
 let currentMockUser: { uid: string } | null = null;
+let currentLoading = false;
 vi.mock("@/context/AuthContext", () => ({
   useAuth: () => ({
     user: currentMockUser,
-    loading: false
+    loading: currentLoading
   })
 }));
 
@@ -54,18 +57,36 @@ describe("useInterviewSave hook", () => {
     vi.clearAllMocks();
     localStorage.clear();
     currentMockUser = null;
+    currentLoading = false;
+    mockAddDoc.mockResolvedValue({ id: "mock_firestore_id" });
+  });
+
+  const defaultConfig = {
+    company: "Google",
+    jobTitle: "Software Engineer",
+    specialization: "Web",
+    interviewType: "technical" as const
+  };
+
+  const defaultMessages: any[] = [
+    { id: "1", role: "user", content: "Hi", parts: [{ type: 'text', text: 'Hi' }] },
+    { id: "2", role: "assistant", content: "Hello", parts: [{ type: 'text', text: 'Hello' }] }
+  ];
+
+  test("does not save if not finished", () => {
+    const { result } = renderHook(() => useInterviewSave(false, defaultMessages, defaultConfig, 10));
+    expect(result.current.interviewId).toBeNull();
+    expect(result.current.isSaving).toBe(false);
+  });
+
+  test("does not save while auth is loading", () => {
+    currentLoading = true;
+    const { result } = renderHook(() => useInterviewSave(true, defaultMessages, defaultConfig, 10));
+    expect(result.current.interviewId).toBeNull();
   });
 
   test("saves locally if user is not logged in", async () => {
-    const config = {
-      company: "Google",
-      jobTitle: "Software Engineer",
-      specialization: "Web",
-      interviewType: "technical"
-    };
-    const messages: { id: string, role: "user" | "system" | "assistant", content: string, parts: { type: "text", text: string }[] }[] = [{ id: "1", role: "user", content: "Hi", parts: [{ type: 'text', text: 'Hi' }] }];
-    
-    const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
+    const { result } = renderHook(() => useInterviewSave(true, defaultMessages, defaultConfig, 10));
 
     await waitFor(() => {
       expect(result.current.interviewId).not.toBeNull();
@@ -76,23 +97,52 @@ describe("useInterviewSave hook", () => {
     expect(localKeys.length).toBe(1);
     const savedData = JSON.parse(localStorage.getItem(localKeys[0])!);
     expect(savedData.company).toBe("Google");
+    expect(savedData.messages.length).toBe(2);
+    expect(savedData.messages[0].content).toBe("Hi");
   });
 
   test("saves to Firestore and updates score if user is logged in", async () => {
     currentMockUser = { uid: "user_123" };
     
-    const config = {
-      company: "Google",
-      jobTitle: "Software Engineer",
-      specialization: "Web",
-      interviewType: "technical"
-    };
-    const messages: { id: string, role: "user" | "system" | "assistant", content: string, parts: { type: "text", text: string }[] }[] = [{ id: "1", role: "user", content: "Hi", parts: [{ type: 'text', text: 'Hi' }] }];
-
-    const { result } = renderHook(() => useInterviewSave(true, messages, config, 10));
+    const { result } = renderHook(() => useInterviewSave(true, defaultMessages, defaultConfig, 10));
 
     await waitFor(() => {
       expect(result.current.interviewId).toBe("mock_firestore_id");
     });
+    
+    expect(mockAddDoc).toHaveBeenCalledTimes(1);
+    expect(mockUpdateDoc).toHaveBeenCalledTimes(1);
+  });
+
+  test("handles Firestore save error gracefully", async () => {
+    currentMockUser = { uid: "user_123" };
+    mockAddDoc.mockRejectedValue(new Error("Firestore Error"));
+    
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    const { result } = renderHook(() => useInterviewSave(true, defaultMessages, defaultConfig, 10));
+
+    await waitFor(() => {
+      expect(result.current.isSaving).toBe(false);
+    });
+    
+    expect(result.current.interviewId).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith("Error saving interview: ", expect.any(Error));
+    
+    consoleSpy.mockRestore();
+  });
+
+  test("only saves once even if rerendered", async () => {
+    currentMockUser = { uid: "user_123" };
+    const { result, rerender } = renderHook(() => useInterviewSave(true, defaultMessages, defaultConfig, 10));
+
+    await waitFor(() => {
+      expect(result.current.interviewId).toBe("mock_firestore_id");
+    });
+
+    rerender();
+    
+    // Should still only be called once
+    expect(mockAddDoc).toHaveBeenCalledTimes(1);
   });
 });

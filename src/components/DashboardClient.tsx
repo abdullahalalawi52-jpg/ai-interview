@@ -2,8 +2,7 @@
 
 import { Settings, ArrowLeft, Activity, Trophy, Clock, Mic, FileText, ListChecks } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
 
@@ -13,6 +12,8 @@ import { useActivities } from "@/hooks/useActivities";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { motion } from "framer-motion";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { getScoreColorClass } from "@/lib/score";
 
 /**
  * DashboardClient Component
@@ -26,16 +27,12 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 export default function DashboardClient() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { user, loading } = useAuth();
-  const router = useRouter();
   const { t } = useLanguage();
 
   const { activities, loading: isFetching } = useActivities(user?.uid);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
+  // Auth redirect is now handled by Next.js middleware
+  // We keep user/loading checks for displaying skeleton loaders
 
   const avgScore = useMemo(() => {
     if (!activities || activities.length === 0) return null;
@@ -73,7 +70,7 @@ export default function DashboardClient() {
     <div className="flex flex-col flex-1 bg-surface text-on-surface min-h-screen">
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full" tabIndex={-1}>
+      <main id="main-content" className="flex-1 p-6 md:p-12 max-w-container-max mx-auto w-full focus:outline-none" tabIndex={-1}>
         <div className="mb-8 flex justify-between items-end">
           <div>
             <h1 className="font-headline-xl text-headline-xl text-on-surface mb-2">{t("dashboard.welcome")}</h1>
@@ -88,7 +85,8 @@ export default function DashboardClient() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <ErrorBoundary>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {[
             { icon: <Activity className="text-primary w-6 h-6" />, label: t("dashboard.stats.completed"), value: isFetching ? <Skeleton className="h-8 w-12" /> : <AnimatedCounter value={activities.length} /> },
             { icon: <Trophy className="text-tertiary w-6 h-6" />, label: t("dashboard.stats.avgScore"), value: isFetching ? <Skeleton className="h-8 w-16" /> : (avgScore !== null ? <span className="flex items-center"><AnimatedCounter value={avgScore} />%</span> : t("dashboard.stats.none")) },
@@ -104,11 +102,13 @@ export default function DashboardClient() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </ErrorBoundary>
 
         {/* History Table */}
         <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">{t("dashboard.history.title")}</h2>
-        <div className="glass-card rounded-3xl p-6 mb-12 overflow-x-auto shadow-sm">
+        <ErrorBoundary>
+          <div className="glass-card rounded-3xl p-6 mb-12 overflow-x-auto shadow-sm">
           {isFetching ? (
             <div className="flex flex-col gap-4">
               <Skeleton className="h-12 w-full" />
@@ -157,14 +157,14 @@ export default function DashboardClient() {
                     <td className="p-4 text-start">
                       {activity.type === 'interview' ? (
                         activity.analysis?.score ? (
-                          <span className={`font-bold ${activity.analysis.score >= 80 ? 'text-green-500' : activity.analysis.score >= 50 ? 'text-yellow-500' : 'text-error'}`}>
+                          <span className={`font-bold ${getScoreColorClass(activity.analysis.score, 'text')}`}>
                             {activity.analysis.score}%
                           </span>
                         ) : (
                           <span className="text-on-surface-variant text-sm">{t("dashboard.history.pending")}</span>
                         )
                       ) : (
-                        <span className={`font-bold ${activity.score !== undefined && activity.total ? ((activity.score / activity.total) >= 0.8 ? 'text-green-500' : (activity.score / activity.total) >= 0.5 ? 'text-yellow-500' : 'text-error') : ''}`}>
+                        <span className={`font-bold ${activity.score !== undefined && activity.total ? getScoreColorClass((activity.score / activity.total) * 100, 'text') : ''}`}>
                           {activity.score} / {activity.total}
                         </span>
                       )}
@@ -184,8 +184,9 @@ export default function DashboardClient() {
                 ))}
               </motion.tbody>
             </table>
-          )}
-        </div>
+            )}
+          </div>
+        </ErrorBoundary>
 
         {/* Actions */}
         <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">{t("dashboard.actions.title")}</h2>

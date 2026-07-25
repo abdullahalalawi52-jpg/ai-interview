@@ -4,6 +4,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
+import { getAtsSystemPrompt } from "@/lib/prompts/atsPrompt";
 import { Buffer } from "buffer";
 // Dynamic import is used inside the handler to prevent Serverless crashing on load
 
@@ -35,9 +36,16 @@ export async function POST(req: Request) {
     // 2. Rate Limiting
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
     const identifier = uid || ip;
-    const { success } = await ratelimit.limit(identifier);
+    const { success, reset } = await ratelimit.limit(identifier);
     if (!success) {
-      return NextResponse.json({ error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً." }, { status: 429 });
+      const retryAfter = reset ? Math.ceil((reset - Date.now()) / 1000) : 60;
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً. / Rate limit exceeded. Please try again later." }, 
+        { 
+          status: 429,
+          headers: { "Retry-After": retryAfter.toString() }
+        }
+      );
     }
 
     // Rate Limiting done
@@ -47,7 +55,7 @@ export async function POST(req: Request) {
     const language = formData.get("language") as string || 'ar';
 
     if (!file || !jobDescription) {
-      return NextResponse.json({ error: "الرجاء إرفاق السيرة الذاتية والوصف الوظيفي." }, { status: 400 });
+      return NextResponse.json({ error: "الرجاء إرفاق السيرة الذاتية والوصف الوظيفي. / Please provide resume and job description." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -70,13 +78,7 @@ export async function POST(req: Request) {
             content: [
               {
                 type: "text",
-                text: `أنت خبير توظيف ونظام ATS (Applicant Tracking System).
-قم بتحليل السيرة الذاتية المرفقة (PDF) مقارنة بالوصف الوظيفي التالي.
-
-الوصف الوظيفي (Job Description):
-${jobDescription}
-
-${language === 'en' ? 'CRITICAL: The entire JSON output, including all lists and strings (missingKeywords, strengths, improvementTips), MUST be written in English.' : 'CRITICAL: The entire JSON output, including all lists and strings, MUST be written in Arabic.'}`
+                text: getAtsSystemPrompt(jobDescription, language)
               },
               {
                 type: "file",
@@ -90,13 +92,13 @@ ${language === 'en' ? 'CRITICAL: The entire JSON output, including all lists and
 
       return NextResponse.json(object);
     } catch (error) {
-      console.error("Failed to generate AI JSON response", error);
-      return NextResponse.json({ error: "فشل في تحليل النتيجة من الذكاء الاصطناعي." }, { status: 500 });
+      console.error("Failed to generate AI JSON response", error instanceof Error ? error.message : "Unknown error");
+      return NextResponse.json({ error: "فشل في تحليل النتيجة من الذكاء الاصطناعي. / Failed to parse AI response." }, { status: 500 });
     }
   } catch (error: unknown) {
     const err = error as Error;
-    console.error("ATS API Error:", err);
+    console.error("ATS API Error:", err instanceof Error ? err.message : "Unknown error");
     // Remove stack trace
-    return NextResponse.json({ error: "حدث خطأ داخلي في الخادم." }, { status: 500 });
+    return NextResponse.json({ error: "حدث خطأ داخلي في الخادم / Internal Server Error." }, { status: 500 });
   }
 }

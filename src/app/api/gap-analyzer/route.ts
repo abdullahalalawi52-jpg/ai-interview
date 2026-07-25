@@ -70,22 +70,29 @@ export async function POST(req: Request) {
     // 1. Authentication
     const { uid, error: authError } = await verifyAuth(req);
     if (authError) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول (Unauthorized)" }, { status: 401 });
+      return NextResponse.json({ error: "غير مصرح لك بالوصول / Unauthorized" }, { status: 401 });
     }
 
     // 2. Rate Limiting
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
     const identifier = uid || ip;
-    const { success } = await ratelimit.limit(identifier);
+    const { success, reset } = await ratelimit.limit(identifier);
     if (!success) {
-      return NextResponse.json({ error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً." }, { status: 429 });
+      const retryAfter = reset ? Math.ceil((reset - Date.now()) / 1000) : 60;
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً. / Rate limit exceeded. Please try again later." }, 
+        { 
+          status: 429,
+          headers: { "Retry-After": retryAfter.toString() }
+        }
+      );
     }
 
     const body = await req.json();
     const parsed = gapAnalyzerInputSchema.safeParse(body);
     
     if (!parsed.success) {
-      return NextResponse.json({ error: "المدخلات غير صالحة (Invalid Input)." }, { status: 400 });
+      return NextResponse.json({ error: "المدخلات غير صالحة / Invalid Input." }, { status: 400 });
     }
 
     const { messages, duration, language } = parsed.data;
@@ -127,9 +134,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(object, { status: 200 });
   } catch (error: unknown) {
-    console.error("Gap analyzer error:", error);
+    console.error("Gap analyzer error:", error instanceof Error ? error.message : "Unknown error");
     return NextResponse.json({ 
-      error: "حدث خطأ داخلي في الخادم."
+      error: "حدث خطأ داخلي في الخادم / Internal Server Error."
     }, { status: 500 });
   }
 }

@@ -7,7 +7,7 @@ interface QuizPlayingProps {
   currentQuestionIndex: number;
   score: number;
   selectedOption: number | null;
-  setSelectedOption: (val: number | null) => void;
+  setSelectedOption: (_val: number | null) => void;
   onNext: () => void;
   onCancel: () => void;
 }

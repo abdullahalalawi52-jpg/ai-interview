@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Trophy, Medal, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage, TranslationKey } from "@/context/LanguageContext";
@@ -70,10 +70,51 @@ export default function LeaderboardClient() {
     fetchLeaderboard();
   }, [t]);
 
+  const renderedUsers = useMemo(() => topUsers.map((user, index) => (
+    <motion.div 
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      }}
+      key={user.id} 
+      className={`grid grid-cols-12 gap-4 items-center px-6 py-4 rounded-2xl transition-colors ${index === 0 ? 'bg-tertiary/10 border border-tertiary/20 shadow-sm' : index === 1 ? 'bg-surface-variant/50 border border-outline-variant/20' : index === 2 ? 'bg-surface-container/50 border border-outline-variant/20' : 'hover:bg-surface-variant/30'}`}
+    >
+      <div className="col-span-2 sm:col-span-1 flex justify-center">
+        {index === 0 ? <Medal className="w-8 h-8 text-tertiary drop-shadow-md" /> : 
+         index === 1 ? <Medal className="w-7 h-7 text-gray-400" /> : 
+         index === 2 ? <Medal className="w-6 h-6 text-amber-600" /> : 
+         <span className="font-bold text-lg text-on-surface-variant/70">{index + 1}</span>}
+      </div>
+      
+      <div className="col-span-7 sm:col-span-5 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-tertiary/20 flex items-center justify-center font-bold text-primary shadow-inner">
+          {user.name.charAt(0)}
+        </div>
+        <div>
+          <h3 className="font-bold text-on-surface">{user.name}</h3>
+          <p className="text-xs text-on-surface-variant">{t(`leaderboard.roles.${user.roleKey}` as TranslationKey)}</p>
+        </div>
+      </div>
+
+      <div className="col-span-3 sm:col-span-4 hidden sm:flex items-center gap-2">
+        <div className="bg-surface-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-outline-variant/30">
+          {user.badge} {t(`leaderboard.levels.${user.levelKey}` as TranslationKey)}
+        </div>
+      </div>
+
+      <div className="col-span-3 sm:col-span-2 flex justify-center">
+        <div className={`px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 ${index === 0 ? 'bg-tertiary text-on-tertiary shadow-md' : 'bg-surface-container text-on-surface border border-outline-variant/50'}`}>
+          {index === 0 && <Star className="w-3 h-3 fill-current" />}
+          <span dir="ltr">{user.score} pt</span>
+        </div>
+      </div>
+    </motion.div>
+  )), [topUsers, t]);
+
   return (
     <div className="flex flex-col min-h-screen bg-surface">
       
-      <main id="main-content" className="flex-1 max-w-4xl mx-auto w-full px-4 py-12" tabIndex={-1}>
+      <main id="main-content" className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 focus:outline-none" tabIndex={-1}>
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-tertiary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
             <Trophy className="w-10 h-10 text-tertiary" />
@@ -125,46 +166,7 @@ export default function LeaderboardClient() {
               </div>
 
               {/* Leaderboard Rows */}
-              {topUsers.map((user, index) => (
-                <motion.div 
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                  }}
-                  key={user.id} 
-                  className={`grid grid-cols-12 gap-4 items-center px-6 py-4 rounded-2xl transition-colors ${index === 0 ? 'bg-tertiary/10 border border-tertiary/20 shadow-sm' : index === 1 ? 'bg-surface-variant/50 border border-outline-variant/20' : index === 2 ? 'bg-surface-container/50 border border-outline-variant/20' : 'hover:bg-surface-variant/30'}`}
-                >
-                  <div className="col-span-2 sm:col-span-1 flex justify-center">
-                    {index === 0 ? <Medal className="w-8 h-8 text-tertiary drop-shadow-md" /> : 
-                     index === 1 ? <Medal className="w-7 h-7 text-gray-400" /> : 
-                     index === 2 ? <Medal className="w-6 h-6 text-amber-600" /> : 
-                     <span className="font-bold text-lg text-on-surface-variant/70">{index + 1}</span>}
-                  </div>
-                  
-                  <div className="col-span-7 sm:col-span-5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-tertiary/20 flex items-center justify-center font-bold text-primary shadow-inner">
-                      {user.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-on-surface">{user.name}</h3>
-                      <p className="text-xs text-on-surface-variant">{t(`leaderboard.roles.${user.roleKey}` as TranslationKey)}</p>
-                    </div>
-                  </div>
-
-                  <div className="col-span-3 sm:col-span-4 hidden sm:flex items-center gap-2">
-                    <div className="bg-surface-container px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 border border-outline-variant/30">
-                      {user.badge} {t(`leaderboard.levels.${user.levelKey}` as TranslationKey)}
-                    </div>
-                  </div>
-
-                  <div className="col-span-3 sm:col-span-2 flex justify-center">
-                    <div className={`px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 ${index === 0 ? 'bg-tertiary text-on-tertiary shadow-md' : 'bg-surface-container text-on-surface border border-outline-variant/50'}`}>
-                      {index === 0 && <Star className="w-3 h-3 fill-current" />}
-                      <span dir="ltr">{user.score} pt</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+              {renderedUsers}
             </motion.div>
           )}
         </div>

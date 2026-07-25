@@ -10,7 +10,7 @@ test.describe('Home Page and Navigation', () => {
     await expect(title).toBeVisible();
     
     // Check if the "Start" or login button exists
-    const startBtn = page.locator('a[href="/interview"]');
+    const startBtn = page.locator('a[href="/interview"]').first();
     await expect(startBtn).toBeVisible();
   });
 });

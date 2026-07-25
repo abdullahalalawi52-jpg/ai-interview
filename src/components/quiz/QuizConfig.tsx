@@ -3,11 +3,11 @@ import { useLanguage } from "@/context/LanguageContext";
 
 interface QuizConfigProps {
   companyName: string;
-  setCompanyName: (val: string) => void;
+  setCompanyName: (_val: string) => void;
   jobTitle: string;
-  setJobTitle: (val: string) => void;
+  setJobTitle: (_val: string) => void;
   selectedCount: number;
-  setSelectedCount: (val: number) => void;
+  setSelectedCount: (_val: number) => void;
   onBack: () => void;
   onGenerate: () => void;
 }

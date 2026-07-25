@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore/lite";
@@ -40,6 +40,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(currentUser);
       
       if (currentUser) {
+        // Set the actual idToken as the cookie so Next.js middleware can verify it
+        const token = await currentUser.getIdToken();
+        document.cookie = `auth=${token}; path=/; max-age=3600; SameSite=Lax; Secure`;
         try {
           const userRef = doc(db, "users", currentUser.uid);
           const userSnap = await getDoc(userRef);
@@ -56,8 +59,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
           }
         } catch (error) {
-          console.error("Error setting up user profile:", error);
+          console.error("Error setting up user profile:", error instanceof Error ? error.message : "Unknown error");
         }
+      } else {
+        // Remove the auth cookie on logout
+        document.cookie = "auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       }
       
       setLoading(false);
@@ -69,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error("Error signing in with Google:", error instanceof Error ? error.message : "Unknown error");
     }
   };
 
@@ -77,12 +83,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error signing out:", error instanceof Error ? error.message : "Unknown error");
     }
   };
 
-  const openAuthModal = () => setIsAuthModalOpen(true);
-  const closeAuthModal = () => setIsAuthModalOpen(false);
+  const openAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
+  const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
   return (
     <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, isAuthModalOpen, openAuthModal, closeAuthModal }}>

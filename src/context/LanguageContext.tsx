@@ -19,8 +19,8 @@ export type TranslationKey = RecursiveKeyOf<typeof en>;
 
 interface LanguageContextType {
   language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: TranslationKey, variables?: Record<string, string | number>) => string;
+  setLanguage: (_lang: Language) => void;
+  t: (_key: TranslationKey, _variables?: Record<string, string | number>) => string;
 }
 
 const dictionaries = { ar, en };

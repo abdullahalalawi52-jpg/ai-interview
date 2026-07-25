@@ -5,6 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { InterviewConfig } from "@/types/interview";
 import type { UIMessage } from "@ai-sdk/react";
 
+const INTERVIEW_COMPLETION_SCORE = 50;
+
 export function useInterviewSave(
   isFinished: boolean,
   messages: UIMessage[],
@@ -23,19 +25,22 @@ export function useInterviewSave(
           // Sanitize messages to save space and prevent hitting Firestore 1MB limit
           // Keep only essential fields (role, content) and limit to last 100 messages
           const sanitizedMessages = messages.slice(-100).map((m: UIMessage) => {
-            const mObj = m as unknown as Record<string, unknown>;
-            const textPart = m.parts?.find(p => p.type === 'text');
-            const partText = textPart && 'text' in textPart ? String(textPart.text) : "";
+            // Type-safe extraction of content and parts to avoid TypeScript errors
+            const messageData = m as unknown as { content?: string, parts?: Array<{ type: string, text?: string }> };
+            const contentStr = typeof messageData.content === 'string' ? messageData.content : "";
+            
+            const parts = messageData.parts;
+            const textPart = Array.isArray(parts) ? parts.find(p => p.type === 'text') : null;
+            const partText = textPart && typeof textPart.text === 'string' ? textPart.text : "";
+            
             return {
               role: m.role,
-              content: (mObj.content as string | undefined) || partText || (mObj.text as string | undefined) || ""
+              content: contentStr || partText || ""
             };
           });
-          const serializableMessages = structuredClone(sanitizedMessages);
-          
           if (user) {
             const docRef = await addDoc(collection(db, "users", user.uid, "interviews"), {
-              messages: serializableMessages,
+              messages: sanitizedMessages,
               createdAt: serverTimestamp(),
               company: interviewConfig.company || "Google",
               jobTitle: interviewConfig.jobTitle || "Software Engineer",
@@ -45,15 +50,15 @@ export function useInterviewSave(
             });
             setInterviewId(docRef.id);
             
-            // Increment leaderboard score (e.g., 50 points for completing an interview)
+            // Increment leaderboard score
             const userRef = doc(db, "users", user.uid);
             await updateDoc(userRef, {
-              totalScore: increment(50)
+              totalScore: increment(INTERVIEW_COMPLETION_SCORE)
             });
           } else {
             const localId = 'local_' + Date.now().toString(36) + Math.random().toString(36).substr(2);
             localStorage.setItem(`interview_${localId}`, JSON.stringify({
-              messages: serializableMessages,
+              messages: sanitizedMessages,
               createdAt: new Date().toISOString(),
               company: interviewConfig.company || "Google",
               jobTitle: interviewConfig.jobTitle || "Software Engineer",

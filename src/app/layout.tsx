@@ -9,7 +9,13 @@ const tajawal = Tajawal({
 });
 
 import { getI18nMetadata } from "@/lib/metadata";
-
+import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider, Language } from "@/context/LanguageContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import SkipLink from "@/components/SkipLink";
+import { cookies } from "next/headers";
+import { Toaster } from "react-hot-toast";
 export async function generateMetadata(): Promise<Metadata> {
   const baseMeta = await getI18nMetadata(
     "AI Interview Prep | تحضير المقابلة الذكية",
@@ -18,7 +24,20 @@ export async function generateMetadata(): Promise<Metadata> {
     "Practice job interviews using AI with instant feedback, resume analysis, and customized technical quizzes."
   );
 
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("NEXT_LOCALE")?.value || "ar";
+  const currentLocale = lang === "ar" ? "ar_SA" : "en_US";
+
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+    alternates: {
+      canonical: '/',
+      languages: {
+        'ar': '/',
+        'en': '/',
+        'x-default': '/'
+      }
+    },
     title: {
       template: typeof baseMeta.title === "string" ? `%s | ${baseMeta.title}` : "%s | AI Interview Prep",
       default: baseMeta.title as string,
@@ -28,13 +47,13 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: baseMeta.title as string,
       description: baseMeta.description as string,
-      url: "https://ai-interview-prep.vercel.app",
+      url: "/",
       siteName: "AI Interview Prep",
-      locale: "ar_SA",
+      locale: currentLocale,
       type: "website",
       images: [
         {
-          url: "https://ai-interview-prep.vercel.app/og-image.png",
+          url: "/og-image.png",
           width: 1200,
           height: 630,
           alt: "AI Interview Prep",
@@ -45,18 +64,10 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: baseMeta.title as string,
       description: baseMeta.description as string,
-      images: ["https://ai-interview-prep.vercel.app/og-image.png"],
+      images: ["/og-image.png"],
     }
   };
 }
-import { AuthProvider } from "@/context/AuthContext";
-import { LanguageProvider, Language } from "@/context/LanguageContext";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
-import SkipLink from "@/components/SkipLink";
-import { cookies } from "next/headers";
-
-import { Toaster } from "react-hot-toast";
 
 export default async function RootLayout({
   children,

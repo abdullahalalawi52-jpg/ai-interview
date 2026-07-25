@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
  
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://ai-interview-prep.vercel.app' // Replace with actual production URL
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ai-interview-prep.vercel.app'
   
   return {
     rules: {

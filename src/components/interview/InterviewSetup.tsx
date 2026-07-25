@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 
 interface InterviewSetupProps {
   config: InterviewConfig;
-  setConfig: (config: InterviewConfig) => void;
+  setConfig: (_config: InterviewConfig) => void;
   onSave: () => void;
 }
 

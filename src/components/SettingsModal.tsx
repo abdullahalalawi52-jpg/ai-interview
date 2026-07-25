@@ -112,7 +112,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         {/* Body */}
         <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
           {/* Sidebar */}
-          <aside className="w-full md:w-64 shrink-0 bg-surface border-l border-surface-container-highest overflow-y-auto p-4">
+          <aside className="w-full md:w-64 shrink-0 bg-surface border-s border-surface-container-highest overflow-y-auto p-4">
             <nav className="flex flex-col gap-xs">
               {tabs.map((tab) => {
                 const Icon = tab.icon;

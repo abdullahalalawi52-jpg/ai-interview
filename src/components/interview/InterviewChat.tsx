@@ -23,7 +23,10 @@ const MessageBubble = React.memo(({ message }: { message: Message }) => {
 });
 MessageBubble.displayName = 'MessageBubble';
 
-const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
+const Editor = dynamic(() => import("@monaco-editor/react"), { 
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center text-sm text-on-surface-variant animate-pulse">جاري تحميل محرر الأكواد...</div>
+});
 
 interface InterviewChatProps {
   config: InterviewConfig;
@@ -33,10 +36,10 @@ interface InterviewChatProps {
   isFinished: boolean;
   elapsedTime: number;
   input: string;
-  setInput: (val: string) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  setInput: (_val: string) => void;
+  onSubmit: (_e: FormEvent<HTMLFormElement>) => void;
   toggleListening: () => void;
-  formatTime: (seconds: number) => string;
+  formatTime: (_seconds: number) => string;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   interviewId: string | null;
 }
@@ -139,7 +142,7 @@ export default function InterviewChat({
 
         {/* Chat Area */}
         <div className="flex-1 bg-surface/80 backdrop-blur-md rounded-[32px] overflow-hidden shadow-2xl border border-outline-variant/30 flex flex-col min-h-0">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" aria-live="polite">
             {messages.filter(m => {
               const textPart = m.parts?.find((p: { type: string }) => p.type === 'text') as { type: 'text', text: string } | undefined;
               return m.role !== 'system' && (!textPart || (!textPart.text.includes(t("defaults.readyToStart"))));

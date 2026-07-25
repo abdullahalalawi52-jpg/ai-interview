@@ -15,9 +15,16 @@ export async function POST(req: Request) {
 
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
     const identifier = uid || ip;
-    const { success } = await ratelimit.limit(identifier);
+    const { success, reset } = await ratelimit.limit(identifier);
     if (!success) {
-      return NextResponse.json({ error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً." }, { status: 429 });
+      const retryAfter = reset ? Math.ceil((reset - Date.now()) / 1000) : 60;
+      return NextResponse.json(
+        { error: "تم تجاوز الحد المسموح من الطلبات. يرجى المحاولة لاحقاً. / Rate limit exceeded. Please try again later." }, 
+        { 
+          status: 429,
+          headers: { "Retry-After": retryAfter.toString() }
+        }
+      );
     }
 
     const formData = await req.formData();
@@ -25,7 +32,7 @@ export async function POST(req: Request) {
     const language = formData.get("language") as string || 'ar';
 
     if (!file) {
-      return NextResponse.json({ error: "الرجاء إرفاق السيرة الذاتية." }, { status: 400 });
+      return NextResponse.json({ error: "الرجاء إرفاق السيرة الذاتية. / Please provide resume." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -65,12 +72,12 @@ ${language === 'en' ? 'CRITICAL: The entire JSON output MUST be written in Engli
 
       return NextResponse.json(object);
     } catch (error) {
-      console.error("Failed to generate AI JSON response", error);
-      return NextResponse.json({ error: "فشل في تحليل السيرة الذاتية من الذكاء الاصطناعي." }, { status: 500 });
+      console.error("Failed to generate AI JSON response", error instanceof Error ? error.message : "Unknown error");
+      return NextResponse.json({ error: "فشل في تحليل السيرة الذاتية من الذكاء الاصطناعي. / Failed to parse AI response." }, { status: 500 });
     }
   } catch (error: unknown) {
     const err = error as Error;
-    console.error("LinkedIn Optimizer API Error:", err);
-    return NextResponse.json({ error: "حدث خطأ داخلي في الخادم." }, { status: 500 });
+    console.error("LinkedIn Optimizer API Error:", err instanceof Error ? err.message : "Unknown error");
+    return NextResponse.json({ error: "حدث خطأ داخلي في الخادم / Internal Server Error." }, { status: 500 });
   }
 }

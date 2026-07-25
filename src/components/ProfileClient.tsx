@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getScoreColorClass } from "@/lib/score";
 
 export default function ProfileClient() {
   const { user, loading } = useAuth();
@@ -65,7 +66,7 @@ export default function ProfileClient() {
   return (
     <div className="flex flex-col min-h-screen bg-surface">
       
-      <main id="main-content" className="flex-1 max-w-container-max mx-auto w-full px-gutter py-12 text-start" tabIndex={-1}>
+      <main id="main-content" className="flex-1 max-w-container-max mx-auto w-full px-gutter py-12 text-start focus:outline-none" tabIndex={-1}>
         <div className="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
           <Link href="/dashboard" className="hover:text-primary">{t("profile.dashboard")}</Link>
           <ChevronRight className="w-4 h-4 rtl:-scale-x-100" />
@@ -174,14 +175,14 @@ export default function ProfileClient() {
                       <div className="flex items-center gap-4">
                         {activity.type === 'interview' ? (
                           activity.analysis?.score ? (
-                            <div className={`px-3 py-1 rounded-full font-bold text-sm border ${activity.analysis.score >= 80 ? 'bg-green-500/10 text-green-600 border-green-500/20' : activity.analysis.score >= 50 ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' : 'bg-error/10 text-error border-error/20'}`}>
+                            <div className={`px-3 py-1 rounded-full font-bold text-sm border ${getScoreColorClass(activity.analysis.score, 'bg')}`}>
                               {activity.analysis.score}%
                             </div>
                           ) : (
                             <span className="text-sm text-on-surface-variant">{t("profile.noRating")}</span>
                           )
                         ) : (
-                          <div className={`px-3 py-1 rounded-full font-bold text-sm border ${activity.score !== undefined && activity.total ? ((activity.score / activity.total) >= 0.8 ? 'bg-green-500/10 text-green-600 border-green-500/20' : (activity.score / activity.total) >= 0.5 ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' : 'bg-error/10 text-error border-error/20') : ''}`}>
+                          <div className={`px-3 py-1 rounded-full font-bold text-sm border ${activity.score !== undefined && activity.total ? getScoreColorClass((activity.score / activity.total) * 100, 'bg') : ''}`}>
                             {activity.score} / {activity.total}
                           </div>
                         )}

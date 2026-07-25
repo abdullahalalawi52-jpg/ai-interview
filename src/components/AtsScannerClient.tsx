@@ -80,7 +80,7 @@ export default function AtsScannerPage() {
   return (
     <div className="flex flex-col min-h-screen bg-surface">
       
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-6xl mx-auto w-full px-4 py-12 focus:outline-none" tabIndex={-1}>
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
             <FileText className="w-10 h-10 text-primary" />

@@ -8,6 +8,31 @@ export function useTextToSpeech(
 ) {
   const spokenTextLengthRef = useRef<Record<string, number>>({});
   const lastProcessedMessageId = useRef<string | null>(null);
+  
+  // Single utterance instance and a queue to prevent memory leaks
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const queueRef = useRef<string[]>([]);
+  const isSpeakingRef = useRef(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !utteranceRef.current) {
+      utteranceRef.current = new SpeechSynthesisUtterance();
+      utteranceRef.current.onend = () => {
+        if (queueRef.current.length > 0) {
+          const nextText = queueRef.current.shift();
+          if (nextText && utteranceRef.current) {
+            utteranceRef.current.text = nextText;
+            window.speechSynthesis.speak(utteranceRef.current);
+          }
+        } else {
+          isSpeakingRef.current = false;
+        }
+      };
+      utteranceRef.current.onerror = () => {
+        isSpeakingRef.current = false;
+      };
+    }
+  }, []);
 
   const lastMessage = messages[messages.length - 1];
   const lastMessageId = lastMessage?.id;
@@ -19,11 +44,29 @@ export function useTextToSpeech(
 
   const lastMessageText = textPart?.text || "";
 
+  const enqueueSpeech = (text: string, lang: string) => {
+    if (!utteranceRef.current) return;
+    
+    queueRef.current.push(text);
+    
+    if (!isSpeakingRef.current) {
+      isSpeakingRef.current = true;
+      const nextText = queueRef.current.shift();
+      if (nextText) {
+        utteranceRef.current.text = nextText;
+        utteranceRef.current.lang = lang === "en" ? "en-US" : "ar-SA";
+        window.speechSynthesis.speak(utteranceRef.current);
+      }
+    }
+  };
+
   useEffect(() => {
     if (lastMessageRole === "assistant" && lastMessageId) {
       // If we switched to a new message, cancel any ongoing speech from previous ones
       if (lastProcessedMessageId.current !== lastMessageId) {
         window.speechSynthesis.cancel();
+        queueRef.current = []; // Clear queue
+        isSpeakingRef.current = false;
         lastProcessedMessageId.current = lastMessageId;
       }
 
@@ -43,18 +86,14 @@ export function useTextToSpeech(
             newlySpoken += sentence;
             const textToSpeak = sentence.trim();
             if (textToSpeak.length > 0) {
-              const utterance = new SpeechSynthesisUtterance(textToSpeak);
-              utterance.lang = language === "en" ? "en-US" : "ar-SA";
-              window.speechSynthesis.speak(utterance);
+              enqueueSpeech(textToSpeak, language);
             }
           });
 
           spokenTextLengthRef.current[lastMessageId] = spokenLength + newlySpoken.length;
         } else if (!isLoading && unspokenPart.trim().length > 0) {
           // If the message finished streaming and there's trailing text without punctuation
-          const utterance = new SpeechSynthesisUtterance(unspokenPart.trim());
-          utterance.lang = language === "en" ? "en-US" : "ar-SA";
-          window.speechSynthesis.speak(utterance);
+          enqueueSpeech(unspokenPart.trim(), language);
           spokenTextLengthRef.current[lastMessageId] = fullText.length;
         }
       }
