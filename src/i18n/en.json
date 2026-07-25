@@ -10,7 +10,8 @@
     "linkedinOptimizer": "LinkedIn Optimizer",
     "login": "Log In",
     "logout": "Log Out",
-    "startInterview": "Start Interview"
+    "startInterview": "Start Interview",
+    "home": "Home"
   },
   "errors": {
     "default": "An unexpected error occurred. Please try again.",
@@ -244,7 +245,10 @@
     "errorTitle": "Error",
     "score": {
       "title": "Overall Performance Score",
-      "desc": "Your performance was evaluated based on accuracy and professionalism in answering the interview questions."
+      "desc": "Your performance was evaluated based on accuracy and professionalism in answering the interview questions.",
+      "excellent": "Excellent",
+      "good": "Good",
+      "needsImprovement": "Needs Improvement"
     },
     "tip": {
       "title": "Quick Tip",
