@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Cairo } from "next/font/google";
+import { Tajawal } from "next/font/google";
 import "./globals.css";
 
-const cairo = Cairo({
+const tajawal = Tajawal({
+  weight: ["200", "300", "400", "500", "700", "800", "900"],
   subsets: ["arabic", "latin"],
-  variable: "--font-cairo",
+  variable: "--font-tajawal",
 });
 
 import { getI18nMetadata } from "@/lib/metadata";
@@ -67,7 +68,7 @@ export default async function RootLayout({
   const initialDir = initialLang === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={initialLang} dir={initialDir} className={`${cairo.variable} antialiased`} suppressHydrationWarning>
+    <html lang={initialLang} dir={initialDir} className={`${tajawal.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"

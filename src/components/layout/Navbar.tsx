@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BrainCircuit, Globe, Moon, Sun, Menu, X } from "lucide-react";
+import { BrainCircuit, Globe, Moon, Sun, Menu, X, LayoutDashboard, Trophy, FileSearch, Briefcase, Target, Brain } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -16,7 +16,6 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,7 +25,7 @@ export default function Navbar() {
   }, []);
 
   const isActiveMobile = (path: string) => {
-    return pathname === path ? "text-primary font-bold bg-primary/10 rounded-lg" : "text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-lg transition-colors";
+    return pathname === path ? "text-violet-600 font-bold bg-violet-50 dark:bg-violet-900/20 rounded-xl" : "text-gray-600 dark:text-gray-300 hover:text-violet-600 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors";
   };
 
   const toggleLanguage = () => {
@@ -38,127 +37,100 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    ...(user ? [{ path: "/dashboard", label: t("nav.dashboard") }] : []),
-    { path: "/leaderboard", label: t("nav.leaderboard") },
-    { path: "/ats-scanner", label: t("nav.atsScanner") },
-    { path: "/linkedin-optimizer", label: t("nav.linkedinOptimizer") },
-    { path: "/gap-analyzer", label: t("nav.gapAnalyzer") },
-    { path: "/quiz", label: t("nav.quiz") }
+    { path: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
+    { path: "/leaderboard", label: t("nav.leaderboard"), icon: Trophy },
+    { path: "/ats-scanner", label: t("nav.atsScanner"), icon: FileSearch },
+    { path: "/linkedin-optimizer", label: t("nav.linkedinOptimizer"), icon: Briefcase },
+    { path: "/gap-analyzer", label: t("nav.gapAnalyzer"), icon: Target },
+    { path: "/quiz", label: t("nav.quiz"), icon: Brain }
   ];
 
   return (
-    <header className="docked full-width top-0 z-50 sticky bg-surface/95 dark:bg-surface-dim/95 backdrop-blur-md shadow-sm border-b border-outline-variant/30 transition-colors duration-300">
-      <nav className="flex items-center justify-between gap-4 xl:gap-8 px-gutter w-full max-w-container-max mx-auto h-16">
+    <header className="fixed w-full top-3 z-50 px-4">
+      <nav className="flex items-center justify-between h-20 px-4 md:px-6 xl:px-8 w-full max-w-[1536px] mx-auto gap-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-gray-100 dark:border-gray-800 transition-colors duration-300 rounded-[2.5rem]">
         
-        {/* Brand & Mobile Menu Toggle */}
-        <div className="flex items-center gap-2">
-          <button 
-            className="xl:hidden p-2 text-on-surface-variant hover:text-primary transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? t("defaults.closeMenu") : t("defaults.openMenu")}
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-          <Link href="/" className="flex items-center gap-sm group">
-            <BrainCircuit className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
-            <span className="text-lg font-bold text-primary hidden xl:block whitespace-nowrap">{t("nav.brand")}</span>
+        {/* Logo (الجانب الأيمن) */}
+        <div className="flex items-center shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="flex items-center justify-center w-11 h-11 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 group-hover:scale-105 transition-transform duration-300">
+              <BrainCircuit className="w-6 h-6" strokeWidth={2} />
+            </div>
+            <div className="hidden xl:flex flex-col">
+              <span className="text-lg font-extrabold text-gray-900 dark:text-white leading-tight">{t("nav.brand")}</span>
+              <span className="text-[10px] text-gray-400 font-medium tracking-wide">{t("nav.brandSubtitle")}</span>
+            </div>
           </Link>
         </div>
         
-        {/* Desktop Nav */}
-        <div className="hidden xl:flex flex-1 justify-center items-center gap-1 min-w-0" onMouseLeave={() => setHoveredPath(null)}>
-          {navLinks.map((link) => {
-            const active = pathname === link.path;
-            const isHovered = hoveredPath === link.path;
-            return (
-              <Link 
-                key={link.path} 
-                href={link.path}
-                onMouseEnter={() => setHoveredPath(link.path)}
-                className={`relative px-2 2xl:px-4 py-1.5 text-sm font-bold transition-colors whitespace-nowrap z-10 ${active ? "text-primary" : "text-on-surface-variant hover:text-primary"}`}
-              >
-                {active && !isHovered && (
-                  <div className="absolute inset-0 bg-primary/10 rounded-full -z-10" />
-                )}
-                {isHovered && (
-                  <motion.div
-                    layoutId="nav-hover-pill"
-                    className="absolute inset-0 bg-surface-variant/50 rounded-full -z-10"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-                {link.label}
-              </Link>
-            );
-          })}
+        {/* Desktop Nav (المنتصف) */}
+        <div className="hidden xl:flex flex-1 justify-center items-center">
+          <div className="flex items-center gap-2 xl:gap-3 px-5 py-2 bg-gray-50/80 dark:bg-gray-800/50 rounded-full shadow-[inset_0_2px_10px_rgb(0,0,0,0.02)] border border-gray-100 dark:border-gray-700/50">
+            {navLinks.map((link, index) => {
+              const active = pathname === link.path;
+              return (
+                <div key={link.path} className="flex items-center">
+                  <Link 
+                    href={link.path}
+                    className={`relative flex flex-col items-center justify-center px-4 xl:px-5 py-2 gap-1.5 rounded-2xl transition-all ${active ? "text-violet-600" : "text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:bg-white dark:hover:bg-gray-700 shadow-none hover:shadow-sm"}`}
+                  >
+                    <link.icon className={`w-[18px] h-[18px] ${active ? "text-violet-600" : "text-gray-400"}`} strokeWidth={active ? 2.5 : 2} />
+                    <span className="text-[11px] xl:text-xs font-bold tracking-wide whitespace-nowrap">{link.label}</span>
+                    {active && (
+                      <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-violet-600" />
+                    )}
+                  </Link>
+                  {index === 0 && (
+                     <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-2" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
         
-        {/* Actions */}
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          {mounted && (
-            <button 
-              onClick={toggleTheme}
-              className="relative flex items-center bg-surface-variant/50 border border-outline-variant/30 rounded-full p-0.5"
-              aria-label="Toggle Theme"
-            >
-              <span className={`relative z-10 flex items-center justify-center w-7 h-7 rounded-full transition-colors ${theme !== "dark" ? "text-primary" : "text-on-surface-variant hover:text-primary"}`}>
-                {theme !== "dark" && (
-                  <motion.div layoutId="theme-pill" className="absolute inset-0 bg-surface shadow-sm rounded-full -z-10" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
-                )}
-                <Sun className="w-4 h-4" />
-              </span>
-              <span className={`relative z-10 flex items-center justify-center w-7 h-7 rounded-full transition-colors ${theme === "dark" ? "text-primary" : "text-on-surface-variant hover:text-primary"}`}>
-                {theme === "dark" && (
-                  <motion.div layoutId="theme-pill" className="absolute inset-0 bg-surface shadow-sm rounded-full -z-10" transition={{ type: "spring", stiffness: 500, damping: 30 }} />
-                )}
-                <Moon className="w-4 h-4" />
-              </span>
-            </button>
-          )}
-
-          <button 
-            onClick={toggleLanguage}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-outline-variant/50 text-on-surface-variant hover:text-primary hover:bg-surface-variant transition-all text-sm font-bold overflow-hidden" 
-            aria-label="Language"
-          >
-            <motion.div
-              key={language}
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Globe className="w-4 h-4" />
-            </motion.div>
-            <div className="relative flex items-center justify-center">
-              <AnimatePresence mode="popLayout">
-                <motion.span
-                  key={language}
-                  initial={{ y: -15, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 15, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="block whitespace-nowrap"
-                >
-                  <span className="hidden sm:inline">{language === "ar" ? "English" : "العربية"}</span>
-                  <span className="sm:hidden">{language === "ar" ? "EN" : "AR"}</span>
-                </motion.span>
-              </AnimatePresence>
-            </div>
-          </button>
+        {/* Actions (الجانب الأيسر) */}
+        <div className="flex items-center gap-3 shrink-0">
+          
+          {/* Settings / Toggles */}
+          <div className="hidden md:flex items-center gap-1 bg-gray-50 dark:bg-gray-800/50 rounded-full p-1 border border-gray-100 dark:border-gray-700">
+             {mounted && (
+              <button 
+                onClick={toggleTheme}
+                className="relative flex items-center justify-center w-8 h-8 rounded-full hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm transition-all"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? <Sun className="w-4 h-4 text-gray-500" /> : <Moon className="w-4 h-4 text-gray-500" />}
+              </button>
+             )}
+             <button 
+                onClick={toggleLanguage}
+                className="flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-full hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm transition-all" 
+                aria-label="Language"
+              >
+                <Globe className="w-4 h-4 text-gray-500" />
+                <span className="text-xs font-bold text-gray-500 pt-[1px]">{language === 'ar' ? 'EN' : 'AR'}</span>
+              </button>
+          </div>
 
           {!loading && !user && (
-            <button onClick={openAuthModal} className="text-on-surface-variant hover:text-primary font-bold transition-colors hidden sm:block whitespace-nowrap text-sm">
+            <button onClick={openAuthModal} className="text-gray-600 dark:text-gray-300 hover:text-violet-600 font-bold transition-colors hidden sm:block whitespace-nowrap text-sm px-2">
               {t("nav.login")}
             </button>
           )}
           {!loading && user && (
-            <button onClick={logout} className="text-error hover:text-error/80 font-bold transition-colors hidden sm:block whitespace-nowrap text-sm">
+            <button onClick={logout} className="text-red-500 hover:text-red-600 font-bold transition-colors hidden sm:block whitespace-nowrap text-sm px-2">
               {t("nav.logout")}
             </button>
           )}
-          <Link href="/interview" className="bg-primary text-on-primary px-3 sm:px-4 py-1.5 rounded-full font-bold text-sm transition-all duration-200 active:scale-95 hover:bg-primary/90 shadow-md hover:shadow-lg whitespace-nowrap">
-            {t("nav.startInterview")}
-          </Link>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="xl:hidden flex items-center justify-center w-11 h-11 bg-white dark:bg-gray-800 rounded-full shadow-[0_4px_15px_rgb(0,0,0,0.05)] border border-gray-50 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:text-violet-600 transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? t("defaults.closeMenu") : t("defaults.openMenu")}
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </nav>
 
@@ -166,31 +138,31 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="xl:hidden border-t border-outline-variant/30 bg-surface/95 backdrop-blur-md overflow-hidden"
+            initial={{ height: 0, opacity: 0, y: -20 }}
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: -20 }}
+            className="xl:hidden mt-4 mx-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-100 dark:border-gray-800 rounded-3xl shadow-xl overflow-hidden pointer-events-auto"
           >
-            <div className="flex flex-col px-4 py-4 gap-2">
+            <div className="flex flex-col px-4 py-4 gap-1">
               {navLinks.map((link) => (
                 <Link 
                   key={link.path} 
                   href={link.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-4 py-3 ${isActiveMobile(link.path)}`}
+                  className={`flex items-center gap-3 px-4 py-3 ${isActiveMobile(link.path)}`}
                 >
+                  <link.icon className="w-5 h-5" />
                   {link.label}
                 </Link>
               ))}
               
-              <div className="h-px bg-outline-variant/30 my-2"></div>
+              <div className="h-px bg-gray-100 dark:bg-gray-800 my-2"></div>
               
               <div className="flex items-center justify-between px-4 py-2">
-                <span className="font-bold text-on-surface-variant">{t("defaults.language")}</span>
+                <span className="font-bold text-gray-700 dark:text-gray-300">{t("defaults.language")}</span>
                 <button 
                   onClick={() => { toggleLanguage(); setIsMobileMenuOpen(false); }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-variant transition-all text-sm font-bold border border-outline-variant/30" 
-                  aria-label={t("defaults.changeLanguage")}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-violet-600 transition-all text-sm font-bold" 
                 >
                   <Globe className="w-4 h-4" />
                   <span>{language === "ar" ? "English" : "العربية"}</span>
@@ -199,23 +171,22 @@ export default function Navbar() {
 
               {mounted && (
                 <div className="flex items-center justify-between px-4 py-2">
-                  <span className="font-bold text-on-surface-variant">{t("defaults.theme")}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-300">{t("defaults.theme")}</span>
                   <button 
                     onClick={() => { toggleTheme(); setIsMobileMenuOpen(false); }}
-                    className="p-2 rounded-full text-on-surface-variant bg-surface-container border border-outline-variant/30 hover:text-primary hover:bg-surface-variant transition-colors"
-                    aria-label={theme === "dark" ? t("defaults.lightMode") : t("defaults.darkMode")}
+                    className="p-2.5 rounded-full text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 hover:text-violet-600 transition-colors"
                   >
                     {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
                 </div>
               )}
 
-              <div className="h-px bg-outline-variant/30 my-2"></div>
+              <div className="h-px bg-gray-100 dark:bg-gray-800 my-2"></div>
 
               {!loading && !user && (
                 <button 
                   onClick={() => { openAuthModal(); setIsMobileMenuOpen(false); }} 
-                  className="px-4 py-3 text-start font-bold text-on-surface-variant hover:bg-surface-variant rounded-lg"
+                  className="px-4 py-3 text-start font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl"
                 >
                   {t("nav.login")}
                 </button>
@@ -223,19 +194,11 @@ export default function Navbar() {
               {!loading && user && (
                 <button 
                   onClick={() => { logout(); setIsMobileMenuOpen(false); }} 
-                  className="px-4 py-3 text-start font-bold text-error hover:bg-error-container rounded-lg"
+                  className="px-4 py-3 text-start font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
                 >
                   {t("nav.logout")}
                 </button>
               )}
-
-              <Link 
-                href="/interview" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-2 text-center bg-primary text-on-primary py-3 rounded-lg font-bold shadow-md active:scale-95 transition-all"
-              >
-                {t("nav.startInterview")}
-              </Link>
             </div>
           </motion.div>
         )}

@@ -1,6 +1,7 @@
 {
   "nav": {
     "brand": "AI Interview Prep",
+    "brandSubtitle": "AI. Smart. Prepare.",
     "dashboard": "Dashboard",
     "leaderboard": "Leaderboard",
     "atsScanner": "ATS Scanner",

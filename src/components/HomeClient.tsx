@@ -29,12 +29,24 @@ export default function HomeClient() {
     return () => clearInterval(interval);
   }, [phrases.length]);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  };
+
   return (
     <>
+      {/* Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-violet-600/10 blur-[100px] animate-blob"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/10 blur-[120px] animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[-20%] left-[20%] w-[60%] h-[60%] rounded-full bg-cyan-400/10 blur-[150px] animate-blob animation-delay-4000"></div>
+      </div>
 
-      <main id="main-content" className="hero-gradient" tabIndex={-1}>
+      <main id="main-content" className="hero-gradient relative z-10" tabIndex={-1}>
         {/* Hero Section */}
-        <section className="relative pt-20 pb-32 overflow-hidden">
+        <section className="relative pt-8 pb-32 overflow-hidden">
           <div className="max-w-container-max mx-auto px-gutter grid lg:grid-cols-2 gap-xl items-center">
             <div className="flex flex-col gap-lg z-10 min-w-0 w-full">
               <h1 className="font-headline-xl text-headline-xl text-primary leading-tight">{t("home.title")}</h1>
@@ -67,7 +79,10 @@ export default function HomeClient() {
             </div>
             <div className="relative hidden lg:block min-w-0 w-full">
               <div className="absolute inset-0 bg-secondary-fixed/10 blur-3xl rounded-full"></div>
-              <div className="relative glass-card p-lg rounded-[32px] shadow-2xl border border-white/50">
+              <div 
+                className="relative glass-panel spotlight-hover p-lg rounded-[32px] shadow-2xl border border-white/50"
+                onMouseMove={handleMouseMove}
+              >
                 <div className="relative aspect-video bg-gradient-to-br from-[#0f172a] to-[#1e1b4b] rounded-2xl shadow-inner mb-md overflow-hidden flex flex-col items-center justify-center border border-white/10">
                   {/* Background grid */}
                   <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "linear-gradient(#4f46e5 1px, transparent 1px), linear-gradient(90deg, #4f46e5 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
