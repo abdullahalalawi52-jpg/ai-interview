@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore/lite";
+import { quizService } from "@/services/quiz.service";
 import { Question } from "@/types/quiz";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { experimental_useObject as useObject } from '@ai-sdk/react';
@@ -118,23 +118,14 @@ export default function QuizClient() {
       // Save score to public leaderboard
       if (user) {
         try {
-          // Save quiz history
-          await addDoc(collection(db, "users", user.uid, "quizzes"), {
+          // Save quiz history and update score via service
+          await quizService.saveQuiz(user.uid, {
             company: companyName || "Google",
             jobTitle: jobTitle || t("defaults.softwareEngineer"),
             score: finalScore,
             total: activeQuestions.length,
-            createdAt: serverTimestamp()
+            difficulty: "medium" // assuming default since it's not present
           });
-
-          // e.g. 10 points per correct answer
-          const pointsEarned = finalScore * 10;
-          if (pointsEarned > 0) {
-            const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, {
-              totalScore: increment(pointsEarned)
-            });
-          }
         } catch (error) {
           console.error("Error saving score:", error);
         }

@@ -54,9 +54,14 @@ describe("AuthContext", () => {
     vi.clearAllMocks();
     
     // Capture the callback passed to onAuthStateChanged
-    (onAuthStateChanged as any).mockImplementation((auth: any, callback: any) => {
+    vi.mocked(onAuthStateChanged).mockImplementation((auth: any, callback: any) => {
       onAuthStateChangedCallback = callback;
       return vi.fn(); // unsubscribe function
+    });
+    
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({})
     });
   });
 
@@ -86,7 +91,7 @@ describe("AuthContext", () => {
       getIdToken: vi.fn().mockResolvedValue("mock-token")
     };
 
-    (getDoc as any).mockResolvedValue({ exists: () => true });
+    vi.mocked(getDoc).mockResolvedValue({ exists: () => true });
 
     await act(async () => {
       await onAuthStateChangedCallback(mockUser);
@@ -95,8 +100,8 @@ describe("AuthContext", () => {
     expect(screen.getByTestId("loading").textContent).toBe("false");
     expect(screen.getByTestId("user").textContent).toBe("123");
     
-    // Cookie should be set
-    expect(document.cookie).toContain("auth=mock-token");
+    // API should be called
+    expect(global.fetch).toHaveBeenCalledWith('/api/auth/session', expect.any(Object));
   });
 
   it("creates user profile if it does not exist", async () => {
@@ -113,7 +118,7 @@ describe("AuthContext", () => {
       getIdToken: vi.fn().mockResolvedValue("mock-token")
     };
 
-    (getDoc as any).mockResolvedValue({ exists: () => false });
+    vi.mocked(getDoc).mockResolvedValue({ exists: () => false });
 
     await act(async () => {
       await onAuthStateChangedCallback(mockUser);

@@ -28,18 +28,18 @@ vi.mock("next/navigation", () => ({
 describe("DashboardClient Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLanguage as any).mockReturnValue({
+    vi.mocked(useLanguage).mockReturnValue({
       language: "ar",
       t: (key: string) => key,
     });
-    (useRouter as any).mockReturnValue({
+    vi.mocked(useRouter).mockReturnValue({
       push: vi.fn(),
     });
   });
 
   it("renders loading state", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123" } });
-    (useActivities as any).mockReturnValue({ activities: [], loading: true });
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123" } });
+    vi.mocked(useActivities).mockReturnValue({ activities: [], loading: true });
 
     render(<DashboardClient />);
     // Check for skeleton or loading text if available
@@ -47,8 +47,8 @@ describe("DashboardClient Component", () => {
   });
 
   it("renders activities when loaded", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123", displayName: "Test User" } });
-    (useActivities as any).mockReturnValue({ 
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123", displayName: "Test User" } });
+    vi.mocked(useActivities).mockReturnValue({ 
       activities: [
         { id: "1", type: "interview", score: 85, createdAt: new Date() }
       ], 
@@ -56,7 +56,7 @@ describe("DashboardClient Component", () => {
     });
 
     render(<DashboardClient />);
-    expect(screen.getByText("welcome, Test User")).toBeDefined();
-    expect(screen.getByText("score_out_of_100")).toBeDefined(); // The score label might be rendered
+    expect(screen.getByText("dashboard.welcome")).toBeDefined();
+    expect(screen.getByText("dashboard.history.score")).toBeDefined();
   });
 });

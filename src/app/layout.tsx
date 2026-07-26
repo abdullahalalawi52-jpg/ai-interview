@@ -2,12 +2,6 @@ import type { Metadata } from "next";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
 
-const tajawal = Tajawal({
-  weight: ["200", "300", "400", "500", "700", "800", "900"],
-  subsets: ["arabic", "latin"],
-  variable: "--font-tajawal",
-});
-
 import { getI18nMetadata } from "@/lib/metadata";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider, Language } from "@/context/LanguageContext";
@@ -16,6 +10,12 @@ import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import SkipLink from "@/components/SkipLink";
 import { cookies } from "next/headers";
 import { Toaster } from "react-hot-toast";
+
+const tajawal = Tajawal({
+  weight: ["200", "300", "400", "500", "700", "800", "900"],
+  subsets: ["arabic", "latin"],
+  variable: "--font-tajawal",
+});
 export async function generateMetadata(): Promise<Metadata> {
   const baseMeta = await getI18nMetadata(
     "AI Interview Prep | تحضير المقابلة الذكية",

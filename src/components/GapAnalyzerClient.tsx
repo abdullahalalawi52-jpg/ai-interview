@@ -3,12 +3,18 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
+import { interviewService } from "@/services/interview.service";
 import { AlertTriangle, MinusCircle, CheckCircle2, TrendingUp, Sparkles, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import ScoreRing from "./ScoreRing";
+import { ScoreOverview } from "./gap-analyzer/ScoreOverview";
+import { StrengthsWeaknesses } from "./gap-analyzer/StrengthsWeaknesses";
+import { ToneAnalysis } from "./gap-analyzer/ToneAnalysis";
+import { StarMethodFeedback } from "./gap-analyzer/StarMethodFeedback";
+import { IdealAnswers } from "./gap-analyzer/IdealAnswers";
+import { RecommendedTopics } from "./gap-analyzer/RecommendedTopics";
 
 interface AnalysisData {
   score: number;
@@ -60,31 +66,28 @@ export default function GapAnalyzerClient() {
 
       try {
         let data: { messages?: unknown[]; analysis?: unknown; [key: string]: unknown } | null = null;
-        let docRef: ReturnType<typeof doc> | null = null;
-
         if (interviewId.startsWith("local_")) {
-          const localDataStr = localStorage.getItem(`interview_${interviewId}`);
-          if (!localDataStr) {
+          const localData = interviewService.getInterviewLocal(interviewId);
+          if (!localData) {
             setError(tRef.current("gapAnalyzer.errors.notFoundLocal"));
             setLoadingStep(null);
             return;
           }
-          data = JSON.parse(localDataStr);
+          data = localData;
         } else {
           if (!user) {
             setError(tRef.current("gapAnalyzer.errors.loginRequired"));
             setLoadingStep(null);
             return;
           }
-          docRef = doc(db, "users", user.uid, "interviews", interviewId);
-          const docSnap = await getDoc(docRef);
+          const remoteData = await interviewService.getInterview(user.uid, interviewId);
 
-          if (!docSnap.exists()) {
+          if (!remoteData) {
             setError(tRef.current("gapAnalyzer.errors.notFound"));
             setLoadingStep(null);
             return;
           }
-          data = docSnap.data();
+          data = remoteData;
         }
 
         if (!data) return;
@@ -120,11 +123,10 @@ export default function GapAnalyzerClient() {
         
         // حفظ التحليل
         try {
-          if (docRef) {
-            await updateDoc(docRef, { analysis: analysisData });
+          if (!interviewId.startsWith("local_") && user) {
+            await interviewService.updateInterviewAnalysis(user.uid, interviewId, analysisData);
           } else {
-            data.analysis = analysisData;
-            localStorage.setItem(`interview_${interviewId}`, JSON.stringify(data));
+            interviewService.updateInterviewAnalysisLocal(interviewId, analysisData);
           }
         } catch (e) {
           console.error("Failed to save analysis:", e);
@@ -219,153 +221,28 @@ export default function GapAnalyzerClient() {
             >
               {/* Score and Overview */}
               <div className="lg:col-span-4 space-y-8">
-                <div className="glass-card p-8 rounded-3xl shadow-sm border-t-4 border-primary flex flex-col items-center text-center">
-                  <ScoreRing score={analysis.score} size="lg" />
-                  <h3 className="font-headline-md text-headline-md mb-2 mt-4">{t("gapAnalyzer.score.title")}</h3>
-                  <p className="font-body-sm text-on-surface-variant mb-4">{t("gapAnalyzer.score.desc")}</p>
-                </div>
-
-                <div className="bg-primary-container text-on-primary-container p-6 rounded-3xl shadow-md relative overflow-hidden group">
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Sparkles className="w-6 h-6 text-primary" />
-                      <h4 className="font-bold text-lg">{t("gapAnalyzer.tip.title")}</h4>
-                    </div>
-                    <p className="font-body-md leading-relaxed">
-                      {t("gapAnalyzer.tip.desc")}
-                    </p>
-                  </div>
-                  <div className="absolute -bottom-10 -start-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
-                </div>
+                <ScoreOverview score={analysis.score} t={t} />
               </div>
 
               {/* Strengths & Weaknesses */}
               <div className="lg:col-span-8 space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Strengths */}
-                  <div className="glass-card p-6 rounded-3xl shadow-sm border border-outline-variant/50">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                      <div className="p-3 bg-green-500/10 rounded-xl text-green-500">
-                        <CheckCircle2 className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-headline-sm font-bold">{t("gapAnalyzer.strengths")}</h3>
-                    </div>
-                    <ul className="space-y-4">
-                      {analysis.strengths?.map((strength: string, i: number) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
-                          <p className="font-body-md text-on-surface">{strength}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Weaknesses */}
-                  <div className="glass-card p-6 rounded-3xl shadow-sm border border-outline-variant/50">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                      <div className="p-3 bg-error/10 rounded-xl text-error">
-                        <MinusCircle className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-headline-sm font-bold">{t("gapAnalyzer.weaknesses")}</h3>
-                    </div>
-                    <ul className="space-y-4">
-                      {analysis.weaknesses?.map((weakness: string, i: number) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <div className="w-2 h-2 rounded-full bg-error mt-2 flex-shrink-0" />
-                          <p className="font-body-md text-on-surface">{weakness}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <StrengthsWeaknesses 
+                  strengths={analysis.strengths} 
+                  weaknesses={analysis.weaknesses} 
+                  t={t} 
+                />
 
                 {/* Tone & Emotion Analysis */}
-                {analysis.toneAnalysis && (
-                  <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-outline-variant/50 bg-gradient-to-br from-surface to-surface-variant/30">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                      <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                        <Sparkles className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-headline-sm font-bold text-on-surface">{t("gapAnalyzer.tone.title")}</h3>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                      <div className="bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-inner">
-                        <p className="text-sm text-on-surface-variant font-bold mb-1">{t("gapAnalyzer.tone.confidence")}</p>
-                        <p className="font-headline-sm text-primary font-black">{analysis.toneAnalysis.confidenceLevel}</p>
-                      </div>
-                      <div className="bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-inner">
-                        <p className="text-sm text-on-surface-variant font-bold mb-1">{t("gapAnalyzer.tone.professionalism")}</p>
-                        <p className="font-headline-sm text-primary font-black">{analysis.toneAnalysis.professionalism}</p>
-                      </div>
-                    </div>
-                    <div className="bg-secondary-container/30 text-on-surface p-5 rounded-2xl border border-secondary/20 flex flex-col md:flex-row md:items-start">
-                      <span className="font-bold text-secondary flex-shrink-0 md:ml-2 rtl:md:ml-2 ltr:md:mr-2 mb-2 md:mb-0">{t("gapAnalyzer.tone.aiNote")}</span>
-                      <p className="font-body-md leading-relaxed">
-                        {analysis.toneAnalysis.feedback}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                <ToneAnalysis toneAnalysis={analysis.toneAnalysis} t={t} />
 
                 {/* STAR Method Feedback */}
-                {analysis.starMethodFeedback && (
-                  <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-outline-variant/50">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                      <div className="p-3 bg-amber-500/10 rounded-xl text-amber-500">
-                        <Sparkles className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-headline-sm font-bold text-on-surface">{t("gapAnalyzer.starMethod")}</h3>
-                    </div>
-                    <div className="bg-surface p-5 rounded-2xl border border-outline-variant/30 text-on-surface-variant leading-relaxed">
-                      {analysis.starMethodFeedback}
-                    </div>
-                  </div>
-                )}
+                <StarMethodFeedback starMethodFeedback={analysis.starMethodFeedback} t={t} />
 
                 {/* Ideal Answers */}
-                {analysis.idealAnswers && analysis.idealAnswers.length > 0 && (
-                  <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-outline-variant/50">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                      <div className="p-3 bg-success/10 rounded-xl text-success">
-                        <CheckCircle2 className="w-6 h-6" />
-                      </div>
-                      <h3 className="font-headline-sm font-bold text-on-surface">{t("gapAnalyzer.idealAnswers")}</h3>
-                    </div>
-                    <div className="space-y-6">
-                      {analysis.idealAnswers.map((item, index) => (
-                        <div key={index} className="bg-surface-variant p-5 rounded-2xl border border-outline-variant/30 hover:border-success/50 transition-colors flex flex-col gap-3">
-                          <p className="font-bold text-lg text-primary">{t("gapAnalyzer.question")} <span className="text-on-surface font-normal">{item.question}</span></p>
-                          <div className="bg-surface p-4 rounded-xl border border-outline-variant/20">
-                            <p className="text-sm font-bold text-error mb-1">{t("gapAnalyzer.yourAnswer")}</p>
-                            <p className="text-on-surface-variant">{item.userAnswerSummary}</p>
-                          </div>
-                          <div className="bg-success/5 p-4 rounded-xl border border-success/20">
-                            <p className="text-sm font-bold text-success mb-1">{t("gapAnalyzer.ideal")}</p>
-                            <p className="text-on-surface leading-relaxed">{item.idealAnswer}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <IdealAnswers idealAnswers={analysis.idealAnswers} t={t} />
 
                 {/* Recommended Topics */}
-                <div className="glass-card p-8 rounded-3xl shadow-sm border border-outline-variant/50">
-                  <div className="flex items-center gap-3 mb-6 pb-4 border-b border-outline-variant/30">
-                    <div className="p-3 bg-secondary/10 rounded-xl text-secondary">
-                      <BookOpen className="w-6 h-6" />
-                    </div>
-                    <h3 className="font-headline-md font-bold">{t("gapAnalyzer.topics")}</h3>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {analysis.recommendedTopics?.map((item: { topic: string; reason: string }, i: number) => (
-                      <div key={i} className="bg-surface-variant p-5 rounded-2xl border border-outline-variant/30 hover:border-secondary/50 transition-colors">
-                        <h4 className="font-bold text-lg mb-2 text-secondary">{item.topic}</h4>
-                        <p className="text-sm text-on-surface-variant">{item.reason}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <RecommendedTopics recommendedTopics={analysis.recommendedTopics} t={t} />
               </div>
             </motion.div>
           )}

@@ -17,27 +17,27 @@ vi.mock("@/context/LanguageContext", () => ({
 describe("AtsScannerClient Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLanguage as any).mockReturnValue({
+    vi.mocked(useLanguage).mockReturnValue({
       language: "ar",
       t: (key: string) => key,
     });
   });
 
   it("renders upload interface", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123" } });
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123" } });
 
     render(<AtsScannerClient />);
-    expect(screen.getByText("upload_cv")).toBeDefined();
-    expect(screen.getByText("job_description_label")).toBeDefined();
+    expect(screen.getByText("atsScanner.clickToUpload")).toBeDefined();
+    expect(screen.getByText("atsScanner.step2")).toBeDefined();
   });
 
   it("shows error when trying to scan without file", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123" } });
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123" } });
 
     render(<AtsScannerClient />);
     
     // The button might be disabled, so we check if it's disabled initially
-    const scanBtn = screen.getByText("scan_cv");
+    const scanBtn = screen.getByText("atsScanner.scanBtn");
     expect((scanBtn as HTMLButtonElement).disabled).toBe(true);
   });
 });

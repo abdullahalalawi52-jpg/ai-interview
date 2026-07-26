@@ -13,6 +13,7 @@ vi.mock('firebase/firestore/lite', () => ({
   query: vi.fn(),
   orderBy: vi.fn(),
   getDocs: vi.fn(),
+  limit: vi.fn(),
   Timestamp: {
     now: vi.fn()
   }

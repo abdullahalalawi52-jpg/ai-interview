@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "ai";
 import { google, DEFAULT_MODEL } from "@/lib/ai";
 import { Buffer } from "buffer";
+import { verifyAuth } from "@/lib/auth-middleware";
 
 export async function POST(req: NextRequest) {
   try {
+    const { uid, error } = await verifyAuth(req);
+    if (!uid) {
+      return NextResponse.json({ error: error || "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 

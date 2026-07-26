@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { auth, googleProvider, db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore/lite";
+import { auth, googleProvider } from "@/lib/firebase";
+import { userService } from "@/services/user.service";
 import dynamic from "next/dynamic";
 
 const AuthModal = dynamic(() => import("@/components/AuthModal"), { ssr: false });
@@ -40,30 +40,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(currentUser);
       
       if (currentUser) {
-        // Set the actual idToken as the cookie so Next.js middleware can verify it
+        // Set the actual idToken as an HttpOnly cookie via the server API
         const token = await currentUser.getIdToken();
-        document.cookie = `auth=${token}; path=/; max-age=3600; SameSite=Lax; Secure`;
         try {
-          const userRef = doc(db, "users", currentUser.uid);
-          const userSnap = await getDoc(userRef);
-          
-          if (!userSnap.exists()) {
-            await setDoc(userRef, {
-              name: currentUser.displayName || "Anonymous User",
-              email: currentUser.email,
-              photoURL: currentUser.photoURL || "",
-              totalScore: 0,
-              roleKey: "softwareEngineer",
-              levelKey: "beginner",
-              createdAt: serverTimestamp(),
-            });
-          }
+          await fetch("/api/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+        } catch (error) {
+          console.error("Failed to set auth session:", error);
+        }
+        
+        try {
+          await userService.createUserProfileIfNotExists(currentUser.uid, {
+            name: currentUser.displayName || "Anonymous User",
+            email: currentUser.email,
+            photoURL: currentUser.photoURL || "",
+            totalScore: 0,
+            roleKey: "softwareEngineer",
+            levelKey: "beginner",
+          });
         } catch (error) {
           console.error("Error setting up user profile:", error instanceof Error ? error.message : "Unknown error");
         }
       } else {
-        // Remove the auth cookie on logout
-        document.cookie = "auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        // Remove the auth cookie on logout via the server API
+        try {
+          await fetch("/api/auth/session", { method: "DELETE" });
+        } catch (error) {
+          console.error("Failed to clear auth session:", error);
+        }
       }
       
       setLoading(false);

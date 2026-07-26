@@ -4,6 +4,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
+import { extractMessageText } from "@/utils/messageUtils";
 
 const gapAnalyzerSchema = z.object({
   score: z.number().describe("درجة التقييم العام لأداء المرشح من 100"),
@@ -101,8 +102,7 @@ export async function POST(req: Request) {
     const transcript = messages
       .filter((m: { role: string }) => m.role !== "system")
       .map((m: { role: string; content?: string; parts?: { type: string; text?: string }[] }) => {
-        const textPart = m.parts?.find((p: { type: string }) => p.type === 'text');
-        const content = textPart ? textPart.text : m.content;
+        const content = extractMessageText(m);
         return `${m.role === 'user' ? 'المرشح' : 'المُحاور'}: ${content}`;
       })
       .join('\n');

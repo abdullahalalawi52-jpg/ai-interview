@@ -8,6 +8,7 @@ import { InterviewConfig } from "@/types/interview";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import toast from "react-hot-toast";
+import { extractMessageText } from "@/utils/messageUtils";
 
 export function useInterview() {
   const { user } = useAuth();
@@ -32,11 +33,12 @@ export function useInterview() {
     }
   }, [user]);
 
+  const { company, jobTitle, specialization, interviewType } = interviewConfig;
   const transport = useMemo(() => new DefaultChatTransport({
     api: "/api/interview",
-    body: { ...interviewConfig, language },
+    body: { company, jobTitle, specialization, interviewType, language },
     headers: token ? { "Authorization": `Bearer ${token}` } : undefined
-  }), [token, interviewConfig, language]);
+  }), [token, company, jobTitle, specialization, interviewType, language]);
 
   const { messages, sendMessage, status, error } = useChat({
     transport
@@ -60,8 +62,7 @@ export function useInterview() {
   }, [messages]);
 
   const isFinished = messages.some(m => {
-    const textPart = m.parts?.find((p: { type: string }) => p.type === 'text') as { type: 'text', text: string } | undefined;
-    return textPart && textPart.text.includes("[END_INTERVIEW]");
+    return extractMessageText(m).includes("[END_INTERVIEW]");
   });
 
   useEffect(() => {

@@ -76,7 +76,8 @@
       "pending": "Pending",
       "viewReport": "View Report",
       "typeJob": "Type / Job",
-      "quizCompleted": "Completed Quiz"
+      "quizCompleted": "Completed Quiz",
+      "loadMore": "Load More"
     },
     "actions": {
       "title": "What do you want to do today?",

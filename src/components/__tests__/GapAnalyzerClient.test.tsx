@@ -5,7 +5,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import GapAnalyzerClient from "../GapAnalyzerClient";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { interviewService } from "@/services/interview.service";
 
 vi.mock("@/context/AuthContext", () => ({
   useAuth: vi.fn(),
@@ -17,6 +18,16 @@ vi.mock("@/context/LanguageContext", () => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+}));
+
+vi.mock("@/services/interview.service", () => ({
+  interviewService: {
+    getInterviewLocal: vi.fn(),
+    getInterview: vi.fn(),
+    updateInterviewAnalysis: vi.fn(),
+    updateInterviewAnalysisLocal: vi.fn(),
+  },
 }));
 
 // Mock standard chart components
@@ -32,38 +43,52 @@ vi.mock("recharts", () => ({
 describe("GapAnalyzerClient Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLanguage as any).mockReturnValue({
+    vi.mocked(useLanguage).mockReturnValue({
       language: "ar",
       t: (key: string) => key,
     });
-    (useRouter as any).mockReturnValue({
+    vi.mocked(useRouter).mockReturnValue({
       push: vi.fn(),
+    });
+    vi.mocked(useSearchParams).mockReturnValue({
+      get: vi.fn().mockReturnValue(null), // no interviewId by default
     });
   });
 
-  it("renders empty state when no recent interview", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123" } });
-    // Mock local storage to return null
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
+  it("renders empty state when no interviewId is provided", () => {
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123" } });
 
     render(<GapAnalyzerClient />);
-    expect(screen.getByText("gap_analyzer_title")).toBeDefined();
-    expect(screen.getByText("no_interview_data")).toBeDefined();
+    expect(screen.getByText("gapAnalyzer.hero.title")).toBeDefined();
+    expect(screen.getByText("gapAnalyzer.noData")).toBeDefined();
   });
 
-  it("renders analysis button when interview data exists", () => {
-    (useAuth as any).mockReturnValue({ user: { uid: "123" } });
+  it("renders analysis overview when data is loaded", async () => {
+    vi.mocked(useAuth).mockReturnValue({ user: { uid: "123" } });
+    vi.mocked(useSearchParams).mockReturnValue({
+      get: vi.fn().mockReturnValue("local_123"),
+    });
     
-    // Mock local storage with valid interview data
+    // Mock local interview data containing an analysis
     const mockData = {
+      id: "local_123",
       messages: [],
-      score: 80,
+      score: 85,
       duration: 15,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      createdAt: new Date(),
+      status: "completed" as const,
+      analysis: {
+        score: 85,
+        strengths: ["Good communication"],
+        weaknesses: [],
+        recommendedTopics: []
+      }
     };
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(JSON.stringify(mockData));
+    vi.mocked(interviewService.getInterviewLocal).mockReturnValue(mockData);
 
     render(<GapAnalyzerClient />);
-    expect(screen.getByText("start_gap_analysis")).toBeDefined();
+    // Wait for async effect to set analysis and render it
+    expect(await screen.findByText("gapAnalyzer.score.title")).toBeDefined();
   });
 });

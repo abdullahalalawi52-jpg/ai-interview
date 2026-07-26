@@ -76,7 +76,8 @@
       "pending": "قيد الانتظار",
       "viewReport": "عرض التقرير",
       "typeJob": "النوع / الوظيفة",
-      "quizCompleted": "اختبار مكتمل"
+      "quizCompleted": "اختبار مكتمل",
+      "loadMore": "عرض المزيد"
     },
     "actions": {
       "title": "ماذا تريد أن تفعل اليوم؟",

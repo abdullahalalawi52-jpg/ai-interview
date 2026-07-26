@@ -6,6 +6,11 @@ import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "next-themes";
+import { ProfileTab } from "./settings/ProfileTab";
+import { NotificationsTab } from "./settings/NotificationsTab";
+import { AppearanceTab } from "./settings/AppearanceTab";
+import { SecurityTab } from "./settings/SecurityTab";
+import { BillingTab } from "./settings/BillingTab";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -151,87 +156,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           {/* Content Area */}
           <section className="flex-1 overflow-y-auto p-lg md:p-xl bg-surface-container-lowest">
             {activeTab === "profile" && (
-              <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
-                <div>
-                  <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">{t("settingsModal.profile.title")}</h3>
-                  <p className="font-body-sm text-on-surface-variant">{t("settingsModal.profile.desc")}</p>
-                </div>
-                
-                <div className="flex items-center gap-lg">
-                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary relative shrink-0">
-                    <User className="w-10 h-10" />
-                    <button className="absolute bottom-0 right-0 p-1.5 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
-                      <Palette className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div>
-                    <h4 className="font-label-md font-bold text-on-surface">{t("settingsModal.profile.avatar")}</h4>
-                    <p className="font-body-sm text-on-surface-variant mb-sm">{t("settingsModal.profile.avatarDesc")}</p>
-                  </div>
-                </div>
-
-                <form className="space-y-md" onSubmit={(e) => { 
-                  e.preventDefault(); 
-                  // In a real app we would save formData to backend here
-                  console.log("Saving data:", formData);
-                  onClose(); 
-                }}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                    <div className="space-y-xs">
-                      <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.firstName")}</label>
-                      <input type="text" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
-                    </div>
-                    <div className="space-y-xs">
-                      <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.lastName")}</label>
-                      <input type="text" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-xs">
-                    <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.email")}</label>
-                    <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors text-left" dir="ltr" />
-                  </div>
-
-                  <div className="space-y-xs">
-                    <label className="font-label-sm font-bold text-on-surface">{t("settingsModal.profile.jobTarget")}</label>
-                    <input type="text" value={formData.jobTarget} onChange={(e) => setFormData({...formData, jobTarget: e.target.value})} placeholder={t("settingsModal.profile.jobTargetPlaceholder")} className="w-full px-md py-sm bg-surface rounded-lg border border-surface-container-highest focus:outline-none focus:border-primary transition-colors" />
-                  </div>
-
-                  <div className="pt-md flex justify-end">
-                    <button type="submit" className="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md hover:bg-primary/90 transition-colors shadow-sm active:scale-95">
-                      {t("settingsModal.profile.saveBtn")}
-                    </button>
-                  </div>
-                </form>
-              </div>
+              <ProfileTab t={t} user={user} onClose={onClose} />
             )}
 
             {activeTab === "notifications" && (
-              <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
-                <div>
-                  <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">{t("settingsModal.notifications.title")}</h3>
-                  <p className="font-body-sm text-on-surface-variant">{t("settingsModal.notifications.desc")}</p>
-                </div>
-                
-                <div className="space-y-md">
-                  {[
-                    { title: t("settingsModal.notifications.items.reminders.title"), desc: t("settingsModal.notifications.items.reminders.desc") },
-                    { title: t("settingsModal.notifications.items.tips.title"), desc: t("settingsModal.notifications.items.tips.desc") },
-                    { title: t("settingsModal.notifications.items.updates.title"), desc: t("settingsModal.notifications.items.updates.desc") }
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-md border border-surface-container-highest rounded-xl hover:border-primary/30 transition-colors">
-                      <div>
-                        <h4 className="font-label-md font-bold text-on-surface">{item.title}</h4>
-                        <p className="font-body-sm text-on-surface-variant">{item.desc}</p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked={idx !== 1} />
-                        <div className="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <NotificationsTab t={t} />
             )}
 
             {activeTab === "appearance" && (
@@ -247,133 +176,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             )}
           </section>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// Settings Subcomponents
-import { TranslationKey } from "@/context/LanguageContext";
-function AppearanceTab({ t }: { t: (_translateKey: TranslationKey) => string }) {
-  const { theme, setTheme } = useTheme();
-  return (
-    <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
-      <div>
-        <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">{t("settingsModal.appearance.title")}</h3>
-        <p className="font-body-sm text-on-surface-variant">{t("settingsModal.appearance.desc")}</p>
-      </div>
-      
-      <div className="space-y-md">
-        <label className="font-label-md font-bold text-on-surface">{t("settingsModal.appearance.themeLabel")}</label>
-        <p className="font-body-sm text-on-surface-variant mb-sm">{t("settingsModal.appearance.selectTheme")}</p>
-        
-        <div className="grid grid-cols-3 gap-md">
-          {(["light", "dark", "system"] as const).map((tId) => {
-            const isSel = theme === tId;
-            return (
-              <button
-                key={tId}
-                onClick={() => setTheme(tId)}
-                className={`p-md rounded-xl border flex flex-col items-center gap-sm transition-all ${
-                  isSel 
-                    ? "border-primary bg-primary/5 text-primary shadow-sm font-bold" 
-                    : "border-outline-variant/30 bg-surface-container hover:bg-surface-variant text-on-surface-variant"
-                }`}
-              >
-                <span className="text-2xl">
-                  {tId === "light" ? "☀️" : tId === "dark" ? "🌙" : "🖥️"}
-                </span>
-                <span className="text-xs">{t(`settingsModal.appearance.themes.${tId}`)}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface SecurityUser {
-  email?: string | null;
-  emailVerified?: boolean;
-  uid?: string;
-}
-
-function SecurityTab({ t, user }: { t: (_translateKey: TranslationKey) => string; user: SecurityUser | null }) {
-  return (
-    <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
-      <div>
-        <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">{t("settingsModal.tabSecurity.title")}</h3>
-        <p className="font-body-sm text-on-surface-variant">{t("settingsModal.tabSecurity.desc")}</p>
-      </div>
-      
-      <div className="space-y-md">
-        <div className="flex items-center justify-between p-md border border-surface-container-highest rounded-xl bg-surface-container/30">
-          <div>
-            <h4 className="font-label-md font-bold text-on-surface">{t("settingsModal.tabSecurity.provider")}</h4>
-            <p className="font-body-sm text-on-surface-variant">Google OAuth 2.0</p>
-          </div>
-          <span className="px-sm py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Google</span>
-        </div>
-
-        <div className="flex items-center justify-between p-md border border-surface-container-highest rounded-xl bg-surface-container/30">
-          <div>
-            <h4 className="font-label-md font-bold text-on-surface">{t("settingsModal.tabSecurity.verified")}</h4>
-            <p className="font-body-sm text-on-surface-variant">{user?.email || "N/A"}</p>
-          </div>
-          <span className="px-sm py-1 bg-green-500/10 text-green-600 text-xs font-bold rounded-full">
-            {t("settingsModal.tabSecurity.verifiedYes")}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between p-md border border-surface-container-highest rounded-xl bg-surface-container/30">
-          <div>
-            <h4 className="font-label-md font-bold text-on-surface">{t("settingsModal.tabSecurity.accountSecured")}</h4>
-            <p className="font-body-sm text-on-surface-variant">{t("settingsModal.tabSecurity.securedYes")}</p>
-          </div>
-          <span className="px-sm py-1 bg-green-500/10 text-green-600 text-xs font-bold rounded-full">Secure</span>
-        </div>
-
-        <div className="p-md border border-surface-container-highest rounded-xl bg-surface-container/10">
-          <h4 className="font-label-sm font-bold text-on-surface mb-xs">{t("settingsModal.tabSecurity.uid")}</h4>
-          <code className="text-xs text-on-surface-variant select-all block break-all font-mono p-sm bg-surface-container rounded border border-outline-variant/20">{user?.uid || "guest_user"}</code>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BillingTab({ t }: { t: (_translateKey: TranslationKey) => string }) {
-  return (
-    <div className="space-y-xl fade-in max-w-[42rem] mx-auto">
-      <div>
-        <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface mb-xs">{t("settingsModal.billing.title")}</h3>
-        <p className="font-body-sm text-on-surface-variant">{t("settingsModal.billing.desc")}</p>
-      </div>
-      
-      <div className="space-y-md">
-        <div className="p-md border border-surface-container-highest rounded-xl bg-surface-container/30">
-          <h4 className="font-label-md font-bold text-on-surface mb-xs">{t("settingsModal.billing.tier")}</h4>
-          <span className="px-sm py-1 bg-secondary/15 text-secondary text-xs font-bold rounded-full">
-            {t("settingsModal.billing.tierFree")}
-          </span>
-        </div>
-
-        <div className="p-md border border-surface-container-highest rounded-xl space-y-sm bg-surface-container/10">
-          <div className="flex justify-between font-label-md font-bold text-on-surface">
-            <span>{t("settingsModal.billing.usage")}</span>
-            <span>5 / 10 Credits</span>
-          </div>
-          
-          <div className="w-full h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/30">
-            <div className="w-1/2 h-full bg-primary rounded-full"></div>
-          </div>
-          <p className="font-body-sm text-on-surface-variant">{t("settingsModal.billing.usageDesc")}</p>
-        </div>
-
-        <button className="w-full py-md bg-gradient-to-r from-primary to-secondary text-on-primary font-bold rounded-xl transition-all hover:shadow-lg hover:brightness-105 active:scale-[0.98]">
-          {t("settingsModal.billing.upgradeBtn")}
-        </button>
       </div>
     </div>
   );

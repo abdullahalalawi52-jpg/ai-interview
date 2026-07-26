@@ -29,7 +29,7 @@ export default function DashboardClient() {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
 
-  const { activities, loading: isFetching } = useActivities(user?.uid);
+  const { activities, loading: isFetching, hasMore, loadMore } = useActivities(user?.uid);
 
   // Auth redirect is now handled by Next.js middleware
   // We keep user/loading checks for displaying skeleton loaders
@@ -184,6 +184,17 @@ export default function DashboardClient() {
                 ))}
               </motion.tbody>
             </table>
+            )}
+            
+            {hasMore && !isFetching && activities.length > 0 && (
+              <div className="mt-6 flex justify-center">
+                <button 
+                  onClick={loadMore} 
+                  className="px-6 py-2 border border-outline-variant rounded-full text-on-surface-variant hover:bg-surface-variant/50 transition-colors"
+                >
+                  {t("dashboard.history.loadMore")}
+                </button>
+              </div>
             )}
           </div>
         </ErrorBoundary>

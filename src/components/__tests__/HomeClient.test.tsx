@@ -14,6 +14,12 @@ vi.mock("@/context/LanguageContext", () => ({
   useLanguage: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ replace: vi.fn() })),
+  useSearchParams: vi.fn(() => ({ get: vi.fn() })),
+  usePathname: vi.fn(() => "/"),
+}));
+
 vi.mock("next/link", () => ({
   default: ({ children, href }: any) => <a href={href}>{children}</a>,
 }));
@@ -30,30 +36,30 @@ vi.mock("framer-motion", () => ({
 describe("HomeClient Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLanguage as any).mockReturnValue({
+    vi.mocked(useLanguage).mockReturnValue({
       language: "ar",
       t: (key: string) => key,
     });
   });
 
   it("renders hero section for unauthenticated user", () => {
-    (useAuth as any).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       user: null,
       openAuthModal: vi.fn(),
     });
 
     render(<HomeClient />);
-    expect(screen.getByText("hero_title")).toBeDefined();
-    expect(screen.getByText("start_now_free")).toBeDefined();
+    expect(screen.getByText("home.title")).toBeDefined();
+    expect(screen.getByText("home.startBtn")).toBeDefined();
   });
 
   it("renders authenticated call to action", () => {
-    (useAuth as any).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       user: { uid: "123" },
       openAuthModal: vi.fn(),
     });
 
     render(<HomeClient />);
-    expect(screen.getByText("go_to_dashboard")).toBeDefined();
+    expect(screen.getByText("home.startBtn")).toBeDefined();
   });
 });

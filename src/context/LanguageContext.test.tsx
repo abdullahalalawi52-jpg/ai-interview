@@ -1,6 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LanguageProvider, useLanguage, TranslationKey } from "./LanguageContext";
 import { expect, test, describe } from "vitest";
+import ar from "@/i18n/ar.json";
+import en from "@/i18n/en.json";
+
+const initialDictionaries = { ar, en };
 
 // A dummy component to consume the context and display values
 const TestComponent = ({ translationKey, count }: { translationKey: TranslationKey | string; count?: number }) => {
@@ -19,7 +23,7 @@ const TestComponent = ({ translationKey, count }: { translationKey: TranslationK
 describe("LanguageContext & Pluralization", () => {
   test("translates standard static keys correctly in Arabic (default)", () => {
     render(
-      <LanguageProvider>
+      <LanguageProvider initialDictionaries={initialDictionaries}>
         <TestComponent translationKey="nav.dashboard" />
       </LanguageProvider>
     );
@@ -29,7 +33,7 @@ describe("LanguageContext & Pluralization", () => {
 
   test("translates standard static keys correctly in English when switched", () => {
     render(
-      <LanguageProvider>
+      <LanguageProvider initialDictionaries={initialDictionaries}>
         <TestComponent translationKey="nav.dashboard" />
       </LanguageProvider>
     );
@@ -41,7 +45,7 @@ describe("LanguageContext & Pluralization", () => {
   describe("Arabic CLDR Pluralization Rules", () => {
     test("handles zero (0) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={0} />
         </LanguageProvider>
       );
@@ -50,7 +54,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles one (1) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={1} />
         </LanguageProvider>
       );
@@ -59,7 +63,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles two (2) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={2} />
         </LanguageProvider>
       );
@@ -68,7 +72,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles few (3-10) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={5} />
         </LanguageProvider>
       );
@@ -77,7 +81,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles many (11-99) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={15} />
         </LanguageProvider>
       );
@@ -86,7 +90,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles other (100+) rule", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={100} />
         </LanguageProvider>
       );
@@ -97,7 +101,7 @@ describe("LanguageContext & Pluralization", () => {
   describe("English CLDR Pluralization Rules", () => {
     test("handles zero (0) rule in English", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={0} />
         </LanguageProvider>
       );
@@ -107,7 +111,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles one (1) rule in English", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={1} />
         </LanguageProvider>
       );
@@ -117,7 +121,7 @@ describe("LanguageContext & Pluralization", () => {
 
     test("handles other rule in English", () => {
       render(
-        <LanguageProvider>
+        <LanguageProvider initialDictionaries={initialDictionaries}>
           <TestComponent translationKey="testPlural" count={5} />
         </LanguageProvider>
       );

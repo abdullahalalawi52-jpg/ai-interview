@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { useInterviewSave } from "./useInterviewSave";
+import { useInterviewSave } from "../useInterviewSave";
 import { expect, test, describe, vi, beforeEach } from "vitest";
 
 // Define global localStorage mock for Node/JSDOM test runner

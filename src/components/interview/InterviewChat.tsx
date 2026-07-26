@@ -5,18 +5,20 @@ import dynamic from "next/dynamic";
 import { useLanguage } from "@/context/LanguageContext";
 import { InterviewConfig } from "@/types/interview";
 import { UIMessage as Message } from "ai";
+import { extractMessageText } from "@/utils/messageUtils";
 
 const MessageBubble = React.memo(({ message }: { message: Message }) => {
   return (
     <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-[85%] rounded-3xl p-5 shadow-sm ${message.role === 'user' ? 'bg-primary text-on-primary rounded-br-sm' : 'bg-surface text-on-surface border border-outline-variant/50 rounded-bl-sm'}`}>
-        {message.parts?.filter((p) => p.type === 'text').map((p, i) => {
-          const textContent = (p as { text: string }).text;
+        {(() => {
+          const textContent = extractMessageText(message);
+          if (!textContent) return null;
           const displayText = message.role === 'assistant' ? textContent.replace(/\[CODE\]|\[END_INTERVIEW\]/g, '') : textContent;
           return (
-            <p key={i} className="font-body-lg leading-relaxed whitespace-pre-wrap text-start">{displayText}</p>
+            <p className="font-body-lg leading-relaxed whitespace-pre-wrap text-start">{displayText}</p>
           );
-        })}
+        })()}
       </div>
     </div>
   );
@@ -62,8 +64,7 @@ export default function InterviewChat({
   const { t } = useLanguage();
 
   const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant');
-  const textPart = lastAssistantMsg?.parts?.find(p => p.type === 'text');
-  const lastAssistantText = (textPart && 'text' in textPart ? String(textPart.text) : "") || "";
+  const lastAssistantText = lastAssistantMsg ? extractMessageText(lastAssistantMsg) : "";
   const requiresCode = config.interviewType === 'technical' && (lastAssistantText.includes('[CODE]') || lastAssistantText.includes('```'));
 
   return (
@@ -144,8 +145,8 @@ export default function InterviewChat({
         <div className="flex-1 bg-surface/80 backdrop-blur-md rounded-[32px] overflow-hidden shadow-2xl border border-outline-variant/30 flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" aria-live="polite">
             {messages.filter(m => {
-              const textPart = m.parts?.find((p: { type: string }) => p.type === 'text') as { type: 'text', text: string } | undefined;
-              return m.role !== 'system' && (!textPart || (!textPart.text.includes(t("defaults.readyToStart"))));
+              const text = extractMessageText(m);
+              return m.role !== 'system' && !text.includes(t("defaults.readyToStart"));
             }).map((m) => (
               <MessageBubble key={m.id} message={m} />
             ))}

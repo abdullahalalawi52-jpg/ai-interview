@@ -4,6 +4,7 @@ import { z } from "zod";
 import { verifyAuth } from "@/lib/auth-middleware";
 import { ratelimit } from "@/lib/ratelimit";
 import { getInterviewSystemPrompt } from "@/lib/prompts/interviewPrompt";
+import { extractMessageText } from "@/utils/messageUtils";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant", "system", "tool", "data"]),
@@ -69,16 +70,9 @@ export async function POST(req: Request) {
     const systemPrompt = getInterviewSystemPrompt(company, jobTitle, specialization, isBehavioral, language, resumeText);
 
     const coreMessages = messages.map((msg: z.infer<typeof messageSchema>) => {
-      let textContent = typeof msg.content === 'string' ? msg.content : "";
-      if (!textContent && msg.parts && Array.isArray(msg.parts)) {
-        textContent = msg.parts
-          .filter((p: { type?: string; text?: string }) => p && p.type === 'text')
-          .map((p: { type?: string; text?: string }) => p.text || "")
-          .join('\n');
-      }
       return {
         role: msg.role as 'user' | 'assistant' | 'system' | 'tool',
-        content: textContent,
+        content: extractMessageText(msg),
       };
     });
 

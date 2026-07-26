@@ -27,41 +27,41 @@ vi.mock("next-themes", () => ({
 describe("Navbar Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useLanguage as any).mockReturnValue({
+    vi.mocked(useLanguage).mockReturnValue({
       language: "ar",
       t: (key: string) => key,
       toggleLanguage: vi.fn(),
     });
-    (usePathname as any).mockReturnValue("/");
+    vi.mocked(usePathname).mockReturnValue("/");
   });
 
   it("renders login button when unauthenticated", () => {
-    (useAuth as any).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       user: null,
       openAuthModal: vi.fn(),
     });
 
     render(<Navbar />);
-    expect(screen.getByText("login")).toBeDefined();
+    expect(screen.getByText("nav.login")).toBeDefined();
   });
 
   it("renders user menu when authenticated", () => {
-    (useAuth as any).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       user: { displayName: "Test User", photoURL: "" },
       logout: vi.fn(),
     });
 
     render(<Navbar />);
     // "Test User" text might not be rendered directly if using an icon, but checking for dashboard link
-    expect(screen.getByText("dashboard")).toBeDefined();
+    expect(screen.getByText("nav.dashboard")).toBeDefined();
   });
 
   it("opens mobile menu when hamburger is clicked", () => {
-    (useAuth as any).mockReturnValue({ user: null });
+    vi.mocked(useAuth).mockReturnValue({ user: null });
     
     render(<Navbar />);
     
-    const menuBtn = screen.getByLabelText("toggle_menu");
+    const menuBtn = screen.getByLabelText("defaults.openMenu");
     fireEvent.click(menuBtn);
     
     // Check if the menu opens (it might have an overlay or something specific)

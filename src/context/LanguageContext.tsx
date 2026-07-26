@@ -1,8 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import ar from "@/i18n/ar.json";
-import en from "@/i18n/en.json";
+import type enType from "@/i18n/en.json";
 
 export type Language = "ar" | "en";
 
@@ -15,7 +14,7 @@ type RecursiveKeyOf<TObj extends object> = {
     : `${TKey}`;
 }[keyof TObj & (string | number)];
 
-export type TranslationKey = RecursiveKeyOf<typeof en>;
+export type TranslationKey = RecursiveKeyOf<typeof enType>;
 
 interface LanguageContextType {
   language: Language;
@@ -23,23 +22,40 @@ interface LanguageContextType {
   t: (_key: TranslationKey, _variables?: Record<string, string | number>) => string;
 }
 
-const dictionaries = { ar, en };
+// Remove static dictionary import
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ 
   children, 
-  initialLanguage = "ar" 
+  initialLanguage = "ar",
+  initialDictionaries = {}
 }: { 
   children: React.ReactNode,
-  initialLanguage?: Language 
+  initialLanguage?: Language,
+  initialDictionaries?: Record<string, any>
 }) {
   const [language, setLanguageState] = useState<Language>(initialLanguage);
+
+  const [dictionaries, setDictionaries] = useState<Record<string, any>>(initialDictionaries);
 
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = language;
-  }, [language]);
+    
+    // Dynamically load the language file
+    if (!dictionaries[language]) {
+      if (language === "ar") {
+        import("@/i18n/ar.json").then((module) => {
+          setDictionaries((prev) => ({ ...prev, ar: module.default }));
+        });
+      } else if (language === "en") {
+        import("@/i18n/en.json").then((module) => {
+          setDictionaries((prev) => ({ ...prev, en: module.default }));
+        });
+      }
+    }
+  }, [language, dictionaries]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -78,6 +94,9 @@ export function LanguageProvider({
 
   const t = (key: TranslationKey, variables?: Record<string, string | number>) => {
     let value: unknown = undefined;
+    if (!dictionaries[language]) {
+      return key; // return key as fallback while loading
+    }
 
     if (variables && typeof variables.count === "number") {
       const suffix = getPluralSuffix(variables.count, language);

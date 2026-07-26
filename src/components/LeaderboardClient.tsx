@@ -4,8 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Trophy, Medal, Star, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage, TranslationKey } from "@/context/LanguageContext";
-import { db } from "@/lib/firebase";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore/lite";
+import { leaderboardService, LeaderboardUser as BaseLeaderboardUser } from "@/services/leaderboard.service";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 // Helper function to assign badges based on rank
@@ -26,12 +25,7 @@ const getLevelKey = (score: number) => {
   if (score > 50) return "intermediate";
   return "beginner";
 };
-interface LeaderboardUser {
-  id: string;
-  name: string;
-  roleKey: string;
-  score: number;
-  levelKey: string;
+interface LeaderboardUser extends BaseLeaderboardUser {
   badge: string;
 }
 
@@ -43,17 +37,14 @@ export default function LeaderboardClient() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, orderBy("totalScore", "desc"), limit(50));
-        const querySnapshot = await getDocs(q);
+        const users = await leaderboardService.getTopUsers(50);
         
-        const usersData = querySnapshot.docs.map((doc, index) => {
-          const data = doc.data();
+        const usersData = users.map((data, index) => {
           return {
-            id: doc.id,
+            ...data,
             name: data.name || t("defaults.anonymousUser"),
             roleKey: data.roleKey || "appDeveloper",
-            score: data.totalScore || 0,
+            totalScore: data.totalScore || 0,
             levelKey: data.levelKey || getLevelKey(data.totalScore || 0),
             badge: getBadge(index),
           };
@@ -105,7 +96,7 @@ export default function LeaderboardClient() {
       <div className="col-span-3 sm:col-span-2 flex justify-center">
         <div className={`px-3 py-1 rounded-full font-bold text-sm flex items-center gap-1 ${index === 0 ? 'bg-tertiary text-on-tertiary shadow-md' : 'bg-surface-container text-on-surface border border-outline-variant/50'}`}>
           {index === 0 && <Star className="w-3 h-3 fill-current" />}
-          <span dir="ltr">{user.score} pt</span>
+          <span dir="ltr">{user.totalScore} pt</span>
         </div>
       </div>
     </motion.div>

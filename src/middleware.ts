@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { decodeJwt } from 'jose';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
 
-export function middleware(request: NextRequest) {
+// Firebase JWKS URL for ID Tokens
+const FIREBASE_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+const jwks = createRemoteJWKSet(new URL(FIREBASE_JWKS_URL));
+
+export async function middleware(request: NextRequest) {
   // Get the auth cookie
   const authCookie = request.cookies.get('auth');
   const token = authCookie?.value;
@@ -10,13 +14,18 @@ export function middleware(request: NextRequest) {
 
   if (token) {
     try {
-      const decoded = decodeJwt(token);
+      // Verify JWT signature using Firebase's public keys
+      const { payload } = await jwtVerify(token, jwks, {
+        issuer: `https://securetoken.google.com/${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}`,
+        audience: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      });
+
       const currentTime = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp > currentTime) {
+      if (payload.exp && payload.exp > currentTime) {
         isAuthenticated = true;
       }
-    } catch (_error) {
-      console.warn("Invalid JWT in middleware");
+    } catch (error) {
+      console.warn("Invalid JWT in middleware:", error instanceof Error ? error.message : "Unknown error");
     }
   }
 
