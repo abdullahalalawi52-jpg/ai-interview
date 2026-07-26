@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { interviewService } from "@/services/interview.service";
@@ -13,37 +13,15 @@ import { ToneAnalysis } from "./gap-analyzer/ToneAnalysis";
 import { StarMethodFeedback } from "./gap-analyzer/StarMethodFeedback";
 import { IdealAnswers } from "./gap-analyzer/IdealAnswers";
 import { RecommendedTopics } from "./gap-analyzer/RecommendedTopics";
-
-interface AnalysisData {
-  score: number;
-  strengths: string[];
-  weaknesses: string[];
-  recommendedTopics: {
-    topic: string;
-    reason: string;
-  }[];
-  toneAnalysis?: {
-    confidenceLevel: string;
-    professionalism: string;
-    feedback: string;
-  };
-  starMethodFeedback?: string;
-  idealAnswers?: {
-    question: string;
-    userAnswerSummary: string;
-    idealAnswer: string;
-  }[];
-}
+import { AnalysisData } from "@/types";
+import useSWR from "swr";
+import { apiClient } from "@/lib/apiClient";
 
 export default function GapAnalyzerClient() {
   const searchParams = useSearchParams();
   const interviewId = searchParams.get("interviewId");
   const { user } = useAuth();
   const { t, language } = useLanguage();
-
-  const [loadingStep, setLoadingStep] = useState<'data' | 'ai' | null>('data');
-  const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const languageRef = useRef(language);
   const tRef = useRef(t);
@@ -53,96 +31,57 @@ export default function GapAnalyzerClient() {
     tRef.current = t;
   }, [language, t]);
 
-  useEffect(() => {
-    async function fetchAndAnalyze() {
+  const fetcher = async (): Promise<AnalysisData> => {
+    if (!interviewId) throw new Error(tRef.current("gapAnalyzer.errors.noInterviewId"));
 
-      if (!interviewId) {
-        setLoadingStep(null);
-        setError(tRef.current("gapAnalyzer.errors.noInterviewId"));
-        return;
-      }
+    let data: { messages?: unknown[]; analysis?: unknown; [key: string]: unknown } | null = null;
+    
+    if (interviewId.startsWith("local_")) {
+      const localData = interviewService.getInterviewLocal(interviewId);
+      if (!localData) throw new Error(tRef.current("gapAnalyzer.errors.notFoundLocal"));
+      data = localData;
+    } else {
+      if (!user) throw new Error(tRef.current("gapAnalyzer.errors.loginRequired"));
+      const remoteData = await interviewService.getInterview(user.uid, interviewId);
+      if (!remoteData) throw new Error(tRef.current("gapAnalyzer.errors.notFound"));
+      data = remoteData;
+    }
+    if (!data) throw new Error(tRef.current("gapAnalyzer.errors.notFound"));
 
-      try {
-        let data: { messages?: unknown[]; analysis?: unknown; [key: string]: unknown } | null = null;
-        if (interviewId.startsWith("local_")) {
-          const localData = interviewService.getInterviewLocal(interviewId);
-          if (!localData) {
-            setError(tRef.current("gapAnalyzer.errors.notFoundLocal"));
-            setLoadingStep(null);
-            return;
-          }
-          data = localData;
-        } else {
-          if (!user) {
-            setError(tRef.current("gapAnalyzer.errors.loginRequired"));
-            setLoadingStep(null);
-            return;
-          }
-          const remoteData = await interviewService.getInterview(user.uid, interviewId);
-
-          if (!remoteData) {
-            setError(tRef.current("gapAnalyzer.errors.notFound"));
-            setLoadingStep(null);
-            return;
-          }
-          data = remoteData;
-        }
-
-        if (!data) return;
-
-        const messages = data.messages;
-
-        // التحقق مما إذا كان هناك تقرير محفوظ مسبقاً (اختياري) يمكن إضافته لاحقاً
-        if (data.analysis) {
-          setAnalysis(data.analysis as AnalysisData);
-          setLoadingStep(null);
-          return;
-        }
-
-        setLoadingStep('ai');
-        
-        const token = user ? await user.getIdToken() : "";
-        const res = await fetch("/api/gap-analyzer", {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({ messages, duration: data.duration, language: languageRef.current }),
-        });
-
-        if (!res.ok) {
-          throw new Error(tRef.current("gapAnalyzer.errors.aiError"));
-        }
-
-        const analysisData = await res.json();
-        setAnalysis(analysisData);
-        setLoadingStep(null);
-        
-        // حفظ التحليل
-        try {
-          if (!interviewId.startsWith("local_") && user) {
-            await interviewService.updateInterviewAnalysis(user.uid, interviewId, analysisData);
-          } else {
-            interviewService.updateInterviewAnalysisLocal(interviewId, analysisData);
-          }
-        } catch (e) {
-          console.error("Failed to save analysis:", e);
-        }
-      } catch (err: unknown) {
-        console.error(err);
-        const msg = err instanceof Error ? err.message : "";
-        if (msg === "Failed to fetch" || msg.includes("fetch")) {
-          setError(tRef.current("errors.network"));
-        } else {
-          setError(msg || tRef.current("gapAnalyzer.errors.unexpected"));
-        }
-        setLoadingStep(null);
-      }
+    if (data.analysis) {
+      return data.analysis as AnalysisData;
     }
 
-    fetchAndAnalyze();
-  }, [interviewId, user]);
+    const token = user ? await user.getIdToken() : "";
+    const analysisData = await apiClient<AnalysisData>("/api/gap-analyzer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ messages: data.messages, duration: data.duration, language: languageRef.current }),
+    });
+
+    try {
+      if (!interviewId.startsWith("local_") && user) {
+        await interviewService.updateInterviewAnalysis(user.uid, interviewId, analysisData);
+      } else {
+        interviewService.updateInterviewAnalysisLocal(interviewId, analysisData);
+      }
+    } catch (e) {
+      console.error("Failed to save analysis:", e);
+    }
+
+    return analysisData;
+  };
+
+  const { data: analysis, error: swrError, isLoading: loadingStep } = useSWR(
+    interviewId ? ['gap-analyzer', interviewId, user?.uid, language] : null,
+    fetcher,
+    { revalidateOnFocus: false, shouldRetryOnError: false }
+  );
+
+  const error = swrError instanceof Error ? swrError.message : (swrError ? String(swrError) : null);
 
   return (
     <>

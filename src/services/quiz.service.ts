@@ -2,15 +2,7 @@ import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "
 import { db } from "@/lib/firebase";
 import { v4 as uuidv4 } from "uuid";
 
-export interface QuizData {
-  score: number;
-  total: number;
-  company: string;
-  jobTitle: string;
-  difficulty: string;
-  createdAt?: unknown;
-}
-
+import { QuizData } from "@/types";
 export const quizService = {
   /**
    * Saves a quiz result to Firestore and increments the user's score

@@ -2,17 +2,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from "fir
 import { db } from "@/lib/firebase";
 import { v4 as uuidv4 } from "uuid";
 
-export interface InterviewData {
-  messages: Array<{ role: string; content: string }>;
-  company: string;
-  jobTitle: string;
-  specialization: string;
-  interviewType: string;
-  duration: number;
-  createdAt?: unknown;
-  analysis?: unknown;
-}
-
+import { InterviewData } from "@/types";
 export const interviewService = {
   /**
    * Saves an interview to Firestore for a logged-in user
