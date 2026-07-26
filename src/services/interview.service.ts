@@ -1,6 +1,5 @@
 import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
-import { userService } from "./user.service";
 import { v4 as uuidv4 } from "uuid";
 
 export interface InterviewData {
@@ -10,8 +9,8 @@ export interface InterviewData {
   specialization: string;
   interviewType: string;
   duration: number;
-  createdAt?: any;
-  analysis?: any;
+  createdAt?: unknown;
+  analysis?: unknown;
 }
 
 export const interviewService = {
@@ -54,7 +53,7 @@ export const interviewService = {
   /**
    * Updates an interview with analysis data
    */
-  async updateInterviewAnalysis(uid: string, interviewId: string, analysisData: any) {
+  async updateInterviewAnalysis(uid: string, interviewId: string, analysisData: unknown) {
     const docRef = doc(db, "users", uid, "interviews", interviewId);
     await updateDoc(docRef, { analysis: analysisData });
   },
@@ -85,7 +84,7 @@ export const interviewService = {
   /**
    * Updates a local interview with analysis data
    */
-  updateInterviewAnalysisLocal(interviewId: string, analysisData: any) {
+  updateInterviewAnalysisLocal(interviewId: string, analysisData: unknown) {
     const localDataStr = localStorage.getItem(`interview_${interviewId}`);
     if (localDataStr) {
       const data = JSON.parse(localDataStr);

@@ -33,11 +33,11 @@ export function LanguageProvider({
 }: { 
   children: React.ReactNode,
   initialLanguage?: Language,
-  initialDictionaries?: Record<string, any>
+  initialDictionaries?: Record<string, unknown>
 }) {
   const [language, setLanguageState] = useState<Language>(initialLanguage);
 
-  const [dictionaries, setDictionaries] = useState<Record<string, any>>(initialDictionaries);
+  const [dictionaries, setDictionaries] = useState<Record<string, unknown>>(initialDictionaries);
 
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";

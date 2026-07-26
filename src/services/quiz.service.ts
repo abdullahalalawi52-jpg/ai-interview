@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, getDocs, query, orderBy, limit } from "firebase/firestore/lite";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
 import { v4 as uuidv4 } from "uuid";
 
@@ -8,7 +8,7 @@ export interface QuizData {
   company: string;
   jobTitle: string;
   difficulty: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 export const quizService = {

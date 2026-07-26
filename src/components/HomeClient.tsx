@@ -1,9 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-
-import { ArrowLeft, Mic, Activity, Sparkles, BrainCircuit } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { HeroSection } from "./home/HeroSection";
 import { FeaturesSection } from "./home/FeaturesSection";
 import { CtaSection } from "./home/CtaSection";

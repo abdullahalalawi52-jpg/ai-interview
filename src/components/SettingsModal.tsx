@@ -5,7 +5,6 @@ import { User, Bell, Palette, Shield, CreditCard, LogOut, X } from "lucide-react
 import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
-import { useTheme } from "next-themes";
 import { ProfileTab } from "./settings/ProfileTab";
 import { NotificationsTab } from "./settings/NotificationsTab";
 import { AppearanceTab } from "./settings/AppearanceTab";
@@ -22,16 +21,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const modalRef = useRef<HTMLDivElement>(null);
-
-  const [firstName, ...lastNameParts] = (user?.displayName || "").split(" ");
-  const lastName = lastNameParts.join(" ");
-
-  const [formData, setFormData] = useState({
-    firstName: firstName || "",
-    lastName: lastName || "",
-    email: user?.email || "",
-    jobTarget: ""
-  });
 
   useEffect(() => {
     if (isOpen && modalRef.current) {

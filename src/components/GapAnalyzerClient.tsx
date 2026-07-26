@@ -3,12 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { interviewService } from "@/services/interview.service";
-import { AlertTriangle, MinusCircle, CheckCircle2, TrendingUp, Sparkles, BookOpen } from "lucide-react";
+import { AlertTriangle, TrendingUp, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-import ScoreRing from "./ScoreRing";
 import { ScoreOverview } from "./gap-analyzer/ScoreOverview";
 import { StrengthsWeaknesses } from "./gap-analyzer/StrengthsWeaknesses";
 import { ToneAnalysis } from "./gap-analyzer/ToneAnalysis";
